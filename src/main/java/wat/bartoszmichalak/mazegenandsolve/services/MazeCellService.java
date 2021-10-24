@@ -1,19 +1,15 @@
 package wat.bartoszmichalak.mazegenandsolve.services;
 
 import org.springframework.stereotype.Service;
-import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
-import wat.bartoszmichalak.mazegenandsolve.entities.MazeCell;
-import wat.bartoszmichalak.mazegenandsolve.repositories.MazeCellRepository;
-
-import java.util.List;
+import wat.bartoszmichalak.mazegenandsolve.repositories.CellRepository;
 
 @Service
 public class MazeCellService {
 
-    private final MazeCellRepository mazeCellRepository;
+    private final CellRepository cellRepository;
 
-    public MazeCellService(MazeCellRepository mazeCellRepository) {
-        this.mazeCellRepository = mazeCellRepository;
+    public MazeCellService(CellRepository cellRepository) {
+        this.cellRepository = cellRepository;
     }
 
 

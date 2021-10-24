@@ -2,7 +2,7 @@ package wat.bartoszmichalak.mazegenandsolve.dto;
 
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
-import wat.bartoszmichalak.mazegenandsolve.entities.MazeCell;
+import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
 
 import java.util.List;
 
@@ -11,14 +11,14 @@ public class MazeDto {
     private final int height;
     private final int wight;
     private final GenerateAlgorithmType algorithmType;
-    private final List<MazeCell> mazeCellsList;
+    private final List<Cell> cellsList;
 
-    public MazeDto(Long id, int height, int wight, GenerateAlgorithmType algorithmType, List<MazeCell> mazeCellsList) {
+    public MazeDto(Long id, int height, int wight, GenerateAlgorithmType algorithmType, List<Cell> cellsList) {
         this.id = id;
         this.height = height;
         this.wight = wight;
         this.algorithmType = algorithmType;
-        this.mazeCellsList = mazeCellsList;
+        this.cellsList = cellsList;
     }
 
     public MazeDto(Maze maze) {
@@ -26,7 +26,7 @@ public class MazeDto {
         height = maze.getHeight();
         wight = maze.getWidth();
         algorithmType = maze.getAlgorithmType();
-        mazeCellsList = maze.getMazeCells();
+        cellsList = maze.getCells();
     }
 
     public Long getId() {
@@ -45,7 +45,7 @@ public class MazeDto {
         return algorithmType;
     }
 
-    public List<MazeCell> getMazeCellsList() {
-        return mazeCellsList;
+    public List<Cell> getMazeCellsList() {
+        return cellsList;
     }
 }

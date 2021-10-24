@@ -7,9 +7,10 @@ import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.dto.CreateMazeDto;
 import wat.bartoszmichalak.mazegenandsolve.dto.MazeDto;
 import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
-import wat.bartoszmichalak.mazegenandsolve.entities.MazeCell;
-import wat.bartoszmichalak.mazegenandsolve.repositories.MazeCellRepository;
+import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
+import wat.bartoszmichalak.mazegenandsolve.repositories.CellRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.MazeRepository;
+import wat.bartoszmichalak.mazegenandsolve.repositories.WallRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +20,20 @@ import java.util.stream.Collectors;
 public class MazeService {
 
     private final MazeRepository mazeRepository;
-    private final MazeCellRepository mazeCellRepository;
+    private final CellRepository cellRepository;
+    private final WallRepository wallRepository;
     private final MazeCellService mazeCellService;
-    private final GenerateService generateService;
     private final SolveService solveService;
 
-    public MazeService(MazeRepository mazeRepository, MazeCellRepository mazeCellRepository, MazeCellService mazeCellService, GenerateService generateService, SolveService solveService) {
+    public MazeService(MazeRepository mazeRepository,
+                       CellRepository cellRepository,
+                       WallRepository wallRepository,
+                       MazeCellService mazeCellService,
+                       SolveService solveService) {
         this.mazeRepository = mazeRepository;
-        this.mazeCellRepository = mazeCellRepository;
+        this.cellRepository = cellRepository;
+        this.wallRepository = wallRepository;
         this.mazeCellService = mazeCellService;
-        this.generateService = generateService;
         this.solveService = solveService;
     }
 
@@ -39,58 +44,57 @@ public class MazeService {
         GenerateAlgorithmType generateAlgorithmType = createMazeDto.getAlgorithmType();
 
         Maze maze = new Maze(height, width, generateAlgorithmType);
-        List<MazeCell> mazeCells = maze.getMazeCells();
 
         switch (generateAlgorithmType) {
             case RandomDFS:
-                generateService.generateByRandomDFS(mazeCells);
+                GenerateService.generateByRandomDFS(maze);
                 break;
             case RandomKruskal:
-                generateService.generateByRandomKruskal(mazeCells);
+                GenerateService.generateByRandomKruskal(maze);
                 break;
             case RandomPrim:
-                generateService.generateByRandomPrim(mazeCells);
+                GenerateService.generateByRandomPrim(maze);
                 break;
             case AldousBroder:
-                generateService.generateByAldousBroder(mazeCells);
+                GenerateService.generateByAldousBroder(maze);
                 break;
             default:
                 break;
         }
 
         mazeRepository.save(maze);
-        mazeCellRepository.saveAll(mazeCells);
+        cellRepository.saveAll(maze.getCells());
+        wallRepository.saveAll(maze.getWalls());
         //TODO add exception
         return new MazeDto(maze);
     }
 
-    public List<Integer> solveMaze(MazeDto mazeDto, SolveAlgorithmType solveAlgorithmType) {
-        List<MazeCell> mazeCells = mazeDto.getMazeCellsList();
-        List<Integer> stepsList = new ArrayList<>();
+    //TODO add exception
+    public void solveMaze(Long mazeId, SolveAlgorithmType solveAlgorithmType) {
+        Maze maze = mazeRepository.findById(mazeId).orElseThrow();
 
         switch (solveAlgorithmType) {
             case Dijkstra:
-                stepsList = solveService.solveByDijkstra(mazeCells);
+                solveService.solveByDijkstra(maze);
                 break;
             case Astar:
-                stepsList = solveService.solveByAstar(mazeCells);
+                solveService.solveByAstar(maze);
                 break;
             case BFS:
-                stepsList = solveService.solveByBFS(mazeCells);
+                solveService.solveByBFS(maze);
                 break;
             case DFS:
-                stepsList = solveService.solveByDFS(mazeCells);
+                solveService.solveByDFS(maze);
                 break;
             default:
                 break;
         }
-        return stepsList;
     }
 
     public List<MazeDto> getAllMazes() {
         return mazeRepository.findAll().stream().map(maze ->
-                new MazeDto(maze.getId(), maze.getHeight(), maze.getWidth(),
-                        maze.getAlgorithmType(), maze.getMazeCells()))
+                        new MazeDto(maze.getId(), maze.getHeight(), maze.getWidth(),
+                                maze.getAlgorithmType(), maze.getCells()))
                 .collect(Collectors.toList());
     }
 
