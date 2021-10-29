@@ -101,7 +101,7 @@ public class MazeGenAndSolveApplication {
             long timeElapsedSek = Math.round((double) timeElapsedMillis / 1_000);
             long timeElapsedMin = Math.round((double) timeElapsedMillis / 60_000);
             long timeElapsedHour = Math.round((double) timeElapsedSek / 3_600);
-            System.out.printf("\nTime difference: \n1) %d ms\n2) %d ns\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedMillis, timeElapsedNano, timeElapsedSek, timeElapsedMin, timeElapsedHour);
+            System.out.printf("\nTime difference: \n1) %d ns\n2) %d ms\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedNano, timeElapsedMillis, timeElapsedSek, timeElapsedMin, timeElapsedHour);
             currentMaze++;
         }
 
@@ -133,7 +133,7 @@ public class MazeGenAndSolveApplication {
             long timeElapsedSek = Math.round((double) timeElapsedMillis / 1_000);
             long timeElapsedMin = Math.round((double) timeElapsedMillis / 60_000);
             long timeElapsedHour = Math.round((double) timeElapsedSek / 3_600);
-            System.out.printf("\nTime difference: \n1) %d ms\n2) %d ns\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedMillis, timeElapsedNano, timeElapsedSek, timeElapsedMin, timeElapsedHour);
+            System.out.printf("\nTime difference: \n1) %d ns\n2) %d ms\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedNano, timeElapsedMillis, timeElapsedSek, timeElapsedMin, timeElapsedHour);
             currentMaze++;
         }
     }

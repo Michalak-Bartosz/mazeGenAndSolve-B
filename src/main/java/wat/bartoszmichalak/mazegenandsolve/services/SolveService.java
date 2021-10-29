@@ -58,11 +58,11 @@ public class SolveService {
         stack.push(startCell);
         algorithmSteps.push(startCell);
         while (!stack.peek().equals(endCell)) {
+            stack.peek().setCellState(CellState.VISITED);
             if (!stack.peek().getUnvisitedNeighbourCells().isEmpty()) {
                 List<Cell> connectedUnvisitedNeighbourCells = getConnectedUnvisitedNeighbourCells(stack.peek());
                 if (!connectedUnvisitedNeighbourCells.isEmpty()) {
                     stack.push(connectedUnvisitedNeighbourCells.get(0));
-                    stack.peek().setCellState(CellState.VISITED);
                 } else {
                     stack.pop();
                 }
