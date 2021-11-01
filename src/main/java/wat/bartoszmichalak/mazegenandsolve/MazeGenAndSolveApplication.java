@@ -15,6 +15,7 @@ import wat.bartoszmichalak.mazegenandsolve.repositories.MazeRepository;
 import wat.bartoszmichalak.mazegenandsolve.services.GenerateService;
 import wat.bartoszmichalak.mazegenandsolve.services.SolveService;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,22 +39,23 @@ public class MazeGenAndSolveApplication {
     public void configureDB() {
         List<Maze> mazeList = new ArrayList<>();
         for (GenerateAlgorithmType generateAlgorithmType : GenerateAlgorithmType.values()) {
-            mazeList.add(new Maze(10, 10, generateAlgorithmType));
+            mazeList.add(new Maze(4, 4, generateAlgorithmType));
         }
         Maze maze = mazeList.get(0);
 
-        System.out.println(maze.getId());
-        System.out.println(maze.getAlgorithmType());
-        System.out.println(maze.getWidth());
-        System.out.println(maze.getHeight());
         mazeRepository.save(maze);
         cellRepository.saveAll(maze.getCells());
         wallRepository.saveAll(maze.getWalls());
 
+        System.out.println(maze.getMazeId());
+        System.out.println(maze.getAlgorithmType());
+        System.out.println(maze.getWidth());
+        System.out.println(maze.getHeight());
+
         Cell checkCell1 = maze.getCells().get(8);
         checkCell1.printNeighboursCells();
 
-        Cell checkCell2 = maze.getCells().get(11);
+        Cell checkCell2 = maze.getCells().get(8);
         checkCell2.printNeighboursCells();
 
         System.out.println("\nCheck numbers of walls in maze: " + maze.getWalls().size() + "\n");
@@ -61,18 +63,23 @@ public class MazeGenAndSolveApplication {
         Wall checkWall1 = maze.getWalls().get(0);
         checkWall1.printNeighbourMazeCells();
 
-        Wall checkWall2 = maze.getWalls().get(21);
+        Wall checkWall2 = maze.getWalls().get(14);
         checkWall2.printNeighbourMazeCells();
 
-        Wall checkWall3 = maze.getWalls().get(27);
+        Wall checkWall3 = maze.getWalls().get(20);
         checkWall3.printNeighbourMazeCells();
 
-        Wall checkWall4 = maze.getWalls().get(38);
+        Wall checkWall4 = maze.getWalls().get(12);
         checkWall4.printNeighbourMazeCells();
 
-        Cell checkWallForCell1 = maze.getCells().get(12);
+        Cell checkWallForCell1 = maze.getCells().get(8);
         checkWallForCell1.printNeighboursWalls();
 
+        System.out.println("\nMaze schema:");
+        maze.printMazeASCII();
+
+        DecimalFormat df = new DecimalFormat();
+        df.setMinimumFractionDigits(3);
         int currentMaze = 0;
         for (GenerateAlgorithmType generateAlgorithmType : GenerateAlgorithmType.values()) {
             System.out.println("\nGenerate maze by: " + generateAlgorithmType.name());
@@ -97,11 +104,11 @@ public class MazeGenAndSolveApplication {
             mazeList.get(currentMaze).printMazeASCII();
 
             long timeElapsedNano = finishNano - startNano;
-            long timeElapsedMillis = Math.round((double) timeElapsedNano / 1_000_000);
-            long timeElapsedSek = Math.round((double) timeElapsedMillis / 1_000);
-            long timeElapsedMin = Math.round((double) timeElapsedMillis / 60_000);
-            long timeElapsedHour = Math.round((double) timeElapsedSek / 3_600);
-            System.out.printf("\nTime difference: \n1) %d ns\n2) %d ms\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedNano, timeElapsedMillis, timeElapsedSek, timeElapsedMin, timeElapsedHour);
+            long timeElapsedMillis = Math.round((double) timeElapsedNano / (double) 1_000_000);
+            long timeElapsedSek = Math.round((double) timeElapsedMillis / (double) 1_000);
+            long timeElapsedMin = Math.round((double) timeElapsedMillis / (double) 60_000);
+            long timeElapsedHour = Math.round((double) timeElapsedSek / (double) 3_600);
+            System.out.printf("\nTime difference: \n1) " + df.format(timeElapsedNano) + " ns\n2) " + df.format(timeElapsedMillis) + " ms\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedSek, timeElapsedMin, timeElapsedHour);
             currentMaze++;
         }
 
@@ -129,11 +136,11 @@ public class MazeGenAndSolveApplication {
             mazeList.get(currentMaze).printMazeASCII();
 
             long timeElapsedNano = finishNano - startNano;
-            long timeElapsedMillis = Math.round((double) timeElapsedNano / 1_000_000);
-            long timeElapsedSek = Math.round((double) timeElapsedMillis / 1_000);
-            long timeElapsedMin = Math.round((double) timeElapsedMillis / 60_000);
-            long timeElapsedHour = Math.round((double) timeElapsedSek / 3_600);
-            System.out.printf("\nTime difference: \n1) %d ns\n2) %d ms\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedNano, timeElapsedMillis, timeElapsedSek, timeElapsedMin, timeElapsedHour);
+            long timeElapsedMillis = timeElapsedNano / 1_000_000;
+            long timeElapsedSek = timeElapsedMillis / 1_000;
+            long timeElapsedMin = timeElapsedMillis / 60_000;
+            long timeElapsedHour = timeElapsedSek / 3_600;
+            System.out.printf("\nTime difference: \n1) " + df.format(timeElapsedNano) + " ns\n2) " + df.format(timeElapsedMillis) + " ms\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedSek, timeElapsedMin, timeElapsedHour);
             currentMaze++;
         }
     }

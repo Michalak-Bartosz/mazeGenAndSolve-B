@@ -40,7 +40,7 @@ public class GenerateService {
         }
 
         printAlgorithmStepsCells(algorithmSteps);
-        resetCellsStatus(maze.getCells());
+        maze.resetCellStatus();
     }
 
     public static void generateByRandomKruskal(Maze maze) {
@@ -68,7 +68,7 @@ public class GenerateService {
         }
 
         printAlgorithmStepsWalls(algorithmSteps);
-        resetCellsStatus(maze.getCells());
+        maze.resetCellStatus();
     }
 
     public static void generateByRandomPrim(Maze maze) {
@@ -92,7 +92,7 @@ public class GenerateService {
         }
 
         printAlgorithmStepsWalls(algorithmSteps);
-        resetCellsStatus(maze.getCells());
+        maze.resetCellStatus();
     }
 
     public static void generateByAldousBroder(Maze maze) {
@@ -113,7 +113,7 @@ public class GenerateService {
         }
 
         printAlgorithmStepsCells(algorithmSteps);
-        resetCellsStatus(maze.getCells());
+        maze.resetCellStatus();
     }
 
     //TODO throw exception
@@ -124,12 +124,6 @@ public class GenerateService {
 
     private static Wall getRandomWall(List<Wall> wallList) {
         return wallList.get(rand.nextInt(wallList.size()));
-    }
-
-    private static void resetCellsStatus(List<Cell> cellList) {
-        for (Cell cell : cellList) {
-            cell.setCellState(CellState.UNVISITED);
-        }
     }
 
     //Kruskal

@@ -22,7 +22,7 @@ public class MazeDto {
     }
 
     public MazeDto(Maze maze) {
-        id = maze.getId();
+        id = maze.getMazeId();
         height = maze.getHeight();
         wight = maze.getWidth();
         algorithmType = maze.getAlgorithmType();

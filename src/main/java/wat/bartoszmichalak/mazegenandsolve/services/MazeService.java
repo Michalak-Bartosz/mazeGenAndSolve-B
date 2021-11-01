@@ -93,7 +93,7 @@ public class MazeService {
 
     public List<MazeDto> getAllMazes() {
         return mazeRepository.findAll().stream().map(maze ->
-                        new MazeDto(maze.getId(), maze.getHeight(), maze.getWidth(),
+                        new MazeDto(maze.getMazeId(), maze.getHeight(), maze.getWidth(),
                                 maze.getAlgorithmType(), maze.getCells()))
                 .collect(Collectors.toList());
     }

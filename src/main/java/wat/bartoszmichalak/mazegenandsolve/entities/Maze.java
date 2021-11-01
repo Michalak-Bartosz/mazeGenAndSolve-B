@@ -16,7 +16,7 @@ public class Maze {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long mazeId;
 
     @NotNull
     private int height;
@@ -144,8 +144,8 @@ public class Maze {
 
     }
 
-    public Long getId() {
-        return id;
+    public Long getMazeId() {
+        return this.mazeId;
     }
 
     public int getWidth() {
@@ -170,6 +170,12 @@ public class Maze {
 
     public boolean hasUnvisitedCells() {
         return this.cells.stream().anyMatch(c -> c.getCellState().equals(CellState.UNVISITED));
+    }
+
+    public void resetCellStatus() {
+        for (Cell cell: this.cells) {
+            cell.setCellState(CellState.UNVISITED);
+        }
     }
 
     public void printMazeASCII() {
