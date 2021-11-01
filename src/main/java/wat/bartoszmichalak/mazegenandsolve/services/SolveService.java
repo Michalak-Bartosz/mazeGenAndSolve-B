@@ -1,6 +1,5 @@
 package wat.bartoszmichalak.mazegenandsolve.services;
 
-import io.swagger.models.auth.In;
 import org.springframework.stereotype.Service;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
@@ -77,47 +76,6 @@ public class SolveService {
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
         printAlgorithmStepsCells(algorithmSteps);
-    }
-
-    private static HashMap<Integer, Integer> initDistanceBetweenCells(List<Cell> cellList) {
-        HashMap<Integer, Integer> distanceBetweenCells = new HashMap<>();
-        for (Cell cell : cellList) {
-            distanceBetweenCells.put(cell.getCellIndex(), 1);
-        }
-        return distanceBetweenCells;
-    }
-
-    private static Cell getMinValueCell(List<Cell> cellList, HashMap<Integer, Double> cellsValue) {
-        Cell minValueCell = null;
-        for (Cell cell : cellList) {
-            if (minValueCell == null || cellsValue.get(cell.getCellIndex()) < cellsValue.get(minValueCell.getCellIndex()))
-                minValueCell = cell;
-        }
-        return minValueCell;
-    }
-
-    private static HashMap<Integer, Double> initCellsValueByDistanceAndScore(List<Cell> cellList, HashMap<Integer, Integer> distanceBetweenCells, HashMap<Integer, Double> cellsScore) {
-        HashMap<Integer, Double> cellsValue = new HashMap<>();
-        for (Cell cell : cellList) {
-            cellsValue.put(cell.getCellIndex(), distanceBetweenCells.get(cell.getCellIndex()) + cellsScore.get(cell.getCellIndex()));
-        }
-        return cellsValue;
-    }
-
-    private static HashMap<Integer, Double> initCellsScore(Maze maze, Cell endCell) {
-        HashMap<Integer, Double> cellsScore = new HashMap<>();
-        cellsScore.put(endCell.getCellIndex(), (double) 0);
-        double x1 = endCell.getPositionX();
-        double y1 = endCell.getPositionY();
-        for (Cell cell : maze.getCells()) {
-            double x2 = cell.getPositionX();
-            double y2 = cell.getPositionY();
-            if (!cell.equals(endCell)) {
-                double distanceBetweenEndCell = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
-                cellsScore.put(cell.getCellIndex(), distanceBetweenEndCell);
-            }
-        }
-        return cellsScore;
     }
 
     public static void solveByBFS(Maze maze) {
@@ -262,6 +220,47 @@ public class SolveService {
         }
         maze.resetCellStatus();
         return distanceFromStartCell;
+    }
+
+    private static HashMap<Integer, Integer> initDistanceBetweenCells(List<Cell> cellList) {
+        HashMap<Integer, Integer> distanceBetweenCells = new HashMap<>();
+        for (Cell cell : cellList) {
+            distanceBetweenCells.put(cell.getCellIndex(), 1);
+        }
+        return distanceBetweenCells;
+    }
+
+    private static Cell getMinValueCell(List<Cell> cellList, HashMap<Integer, Double> cellsValue) {
+        Cell minValueCell = null;
+        for (Cell cell : cellList) {
+            if (minValueCell == null || cellsValue.get(cell.getCellIndex()) < cellsValue.get(minValueCell.getCellIndex()))
+                minValueCell = cell;
+        }
+        return minValueCell;
+    }
+
+    private static HashMap<Integer, Double> initCellsValueByDistanceAndScore(List<Cell> cellList, HashMap<Integer, Integer> distanceBetweenCells, HashMap<Integer, Double> cellsScore) {
+        HashMap<Integer, Double> cellsValue = new HashMap<>();
+        for (Cell cell : cellList) {
+            cellsValue.put(cell.getCellIndex(), distanceBetweenCells.get(cell.getCellIndex()) + cellsScore.get(cell.getCellIndex()));
+        }
+        return cellsValue;
+    }
+
+    private static HashMap<Integer, Double> initCellsScore(Maze maze, Cell endCell) {
+        HashMap<Integer, Double> cellsScore = new HashMap<>();
+        cellsScore.put(endCell.getCellIndex(), (double) 0);
+        double x1 = endCell.getPositionX();
+        double y1 = endCell.getPositionY();
+        for (Cell cell : maze.getCells()) {
+            double x2 = cell.getPositionX();
+            double y2 = cell.getPositionY();
+            if (!cell.equals(endCell)) {
+                double distanceBetweenEndCell = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
+                cellsScore.put(cell.getCellIndex(), distanceBetweenEndCell);
+            }
+        }
+        return cellsScore;
     }
 
     //Print algorithm steps

@@ -79,11 +79,11 @@ public class MazeGenAndSolveApplication {
         maze.printMazeASCII();
 
         DecimalFormat df = new DecimalFormat();
-        df.setMinimumFractionDigits(3);
+        df.setMinimumFractionDigits(6);
         int currentMaze = 0;
         for (GenerateAlgorithmType generateAlgorithmType : GenerateAlgorithmType.values()) {
             System.out.println("\nGenerate maze by: " + generateAlgorithmType.name());
-            long startNano = System.nanoTime();
+            float startNano = System.nanoTime();
             switch (generateAlgorithmType) {
                 case RandomDFS:
                     GenerateService.generateByRandomDFS(mazeList.get(currentMaze));
@@ -100,22 +100,27 @@ public class MazeGenAndSolveApplication {
                 default:
                     break;
             }
-            long finishNano = System.nanoTime();
+            float finishNano = System.nanoTime();
             mazeList.get(currentMaze).printMazeASCII();
 
-            long timeElapsedNano = finishNano - startNano;
-            long timeElapsedMillis = Math.round((double) timeElapsedNano / (double) 1_000_000);
-            long timeElapsedSek = Math.round((double) timeElapsedMillis / (double) 1_000);
-            long timeElapsedMin = Math.round((double) timeElapsedMillis / (double) 60_000);
-            long timeElapsedHour = Math.round((double) timeElapsedSek / (double) 3_600);
-            System.out.printf("\nTime difference: \n1) " + df.format(timeElapsedNano) + " ns\n2) " + df.format(timeElapsedMillis) + " ms\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedSek, timeElapsedMin, timeElapsedHour);
+            float timeElapsedNano = finishNano - startNano;
+            float timeElapsedMillis = timeElapsedNano / 1_000_000;
+            float timeElapsedSek = timeElapsedMillis / 1_000;
+            float timeElapsedMin = timeElapsedMillis / 60_000;
+            float timeElapsedHour = timeElapsedSek / 3_600;
+            System.out.println("\nTime difference: " +
+                    "\n1) " + df.format(timeElapsedNano) + " ns" +
+                    "\n2) " + df.format(timeElapsedMillis) + " ms" +
+                    "\n3) " + df.format(timeElapsedSek) + " s" +
+                    "\n4) " + df.format(timeElapsedMin) + " min" +
+                    "\n5) " + df.format(timeElapsedHour) + " h\n");
             currentMaze++;
         }
 
         currentMaze = 0;
         for (SolveAlgorithmType solveAlgorithmType : SolveAlgorithmType.values()) {
             System.out.println("\nSolve maze by: " + solveAlgorithmType.name());
-            long startNano = System.nanoTime();
+            float startNano = System.nanoTime();
             switch (solveAlgorithmType) {
                 case Dijkstra:
                     SolveService.solveByDijkstra(mazeList.get(currentMaze));
@@ -132,15 +137,20 @@ public class MazeGenAndSolveApplication {
                 default:
                     break;
             }
-            long finishNano = System.nanoTime();
+            float finishNano = System.nanoTime();
             mazeList.get(currentMaze).printMazeASCII();
 
-            long timeElapsedNano = finishNano - startNano;
-            long timeElapsedMillis = timeElapsedNano / 1_000_000;
-            long timeElapsedSek = timeElapsedMillis / 1_000;
-            long timeElapsedMin = timeElapsedMillis / 60_000;
-            long timeElapsedHour = timeElapsedSek / 3_600;
-            System.out.printf("\nTime difference: \n1) " + df.format(timeElapsedNano) + " ns\n2) " + df.format(timeElapsedMillis) + " ms\n3) %d s\n4) %d min\n5) %d h\n", timeElapsedSek, timeElapsedMin, timeElapsedHour);
+            float timeElapsedNano = finishNano - startNano;
+            float timeElapsedMillis = timeElapsedNano / 1_000_000;
+            float timeElapsedSek = timeElapsedMillis / 1_000;
+            float timeElapsedMin = timeElapsedMillis / 60_000;
+            float timeElapsedHour = timeElapsedSek / 3_600;
+            System.out.println("\nTime difference: " +
+                    "\n1) " + df.format(timeElapsedNano) + " ns" +
+                    "\n2) " + df.format(timeElapsedMillis) + " ms" +
+                    "\n3) " + df.format(timeElapsedSek) + " s" +
+                    "\n4) " + df.format(timeElapsedMin) + " min" +
+                    "\n5) " + df.format(timeElapsedHour) + " h\n");
             currentMaze++;
         }
     }
