@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
+import wat.bartoszmichalak.mazegenandsolve.dto.MazeDto;
 import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
 import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
 import wat.bartoszmichalak.mazegenandsolve.entities.Wall;
@@ -13,11 +14,13 @@ import wat.bartoszmichalak.mazegenandsolve.repositories.CellRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.WallRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.MazeRepository;
 import wat.bartoszmichalak.mazegenandsolve.services.GenerateService;
+import wat.bartoszmichalak.mazegenandsolve.services.MazeService;
 import wat.bartoszmichalak.mazegenandsolve.services.SolveService;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class MazeGenAndSolveApplication {
@@ -30,6 +33,9 @@ public class MazeGenAndSolveApplication {
 
     @Autowired
     WallRepository wallRepository;
+
+    @Autowired
+    MazeService mazeService;
 
     public static void main(String[] args) {
         SpringApplication.run(MazeGenAndSolveApplication.class, args);
@@ -152,6 +158,8 @@ public class MazeGenAndSolveApplication {
                     "\n4) " + df.format(timeElapsedMin) + " min" +
                     "\n5) " + df.format(timeElapsedHour) + " h\n");
             currentMaze++;
+
+            System.out.println(new ArrayList<>(mazeService.getAllMazes()));
         }
     }
 }

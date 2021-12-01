@@ -3,9 +3,11 @@ package wat.bartoszmichalak.mazegenandsolve.dto;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
 
 public class CreateMazeDto {
-    private final int height;
-    private final int width;
-    private final GenerateAlgorithmType algorithmType;
+    private int height;
+    private int width;
+    private GenerateAlgorithmType algorithmType;
+
+    public CreateMazeDto() { }
 
     public CreateMazeDto(int height, int width, GenerateAlgorithmType algorithmType) {
         this.height = height;

@@ -1,6 +1,8 @@
 package wat.bartoszmichalak.mazegenandsolve.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
+import org.springframework.data.repository.NoRepositoryBean;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.Direction;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
@@ -29,6 +31,7 @@ public class Maze {
 
     @NotNull
     @OneToMany(mappedBy = "maze", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private final List<Cell> cells = new ArrayList<>();
 
     @NotNull

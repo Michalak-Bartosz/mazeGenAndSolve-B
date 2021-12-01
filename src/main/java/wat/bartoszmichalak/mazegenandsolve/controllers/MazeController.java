@@ -9,7 +9,7 @@ import wat.bartoszmichalak.mazegenandsolve.services.MazeService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/maze")
+@RequestMapping(value = "/mazeGenSolve")
 public class MazeController {
 
     private final MazeService mazeService;
@@ -18,7 +18,7 @@ public class MazeController {
         this.mazeService = mazeService;
     }
 
-    @GetMapping("/allMazes")
+    @GetMapping("/mazes")
     public ResponseEntity<List<MazeDto>> getAllMazes() {
         return ResponseEntity.ok(mazeService.getAllMazes());
     }
@@ -28,8 +28,8 @@ public class MazeController {
         return ResponseEntity.ok(mazeService.getMaze(mazeId));
     }
 
-    @PutMapping ("/maze")
-    ResponseEntity<MazeDto> createMaze(CreateMazeDto createMazeDto) {
-        return ResponseEntity.ok(mazeService.generateMaze(createMazeDto));
+    @PostMapping ("/maze")
+    ResponseEntity<MazeDto> createMaze(@RequestBody CreateMazeDto createMazeDto) {
+        return ResponseEntity.ok(mazeService.createMaze(createMazeDto));
     }
 }

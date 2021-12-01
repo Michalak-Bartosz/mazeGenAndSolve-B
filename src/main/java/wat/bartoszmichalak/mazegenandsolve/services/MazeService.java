@@ -7,12 +7,10 @@ import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.dto.CreateMazeDto;
 import wat.bartoszmichalak.mazegenandsolve.dto.MazeDto;
 import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
-import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
 import wat.bartoszmichalak.mazegenandsolve.repositories.CellRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.MazeRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.WallRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +36,8 @@ public class MazeService {
     }
 
     @Transactional
-    public MazeDto generateMaze(CreateMazeDto createMazeDto) {
+    public MazeDto createMaze(CreateMazeDto createMazeDto) {
+
         int width = createMazeDto.getWidth();
         int height = createMazeDto.getHeight();
         GenerateAlgorithmType generateAlgorithmType = createMazeDto.getAlgorithmType();
@@ -92,9 +91,7 @@ public class MazeService {
     }
 
     public List<MazeDto> getAllMazes() {
-        return mazeRepository.findAll().stream().map(maze ->
-                        new MazeDto(maze.getMazeId(), maze.getHeight(), maze.getWidth(),
-                                maze.getAlgorithmType(), maze.getCells()))
+        return mazeRepository.findAll().stream().map(MazeDto::new)
                 .collect(Collectors.toList());
     }
 
