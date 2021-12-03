@@ -33,7 +33,7 @@ public class Cell {
     private CellState cellState;
 
     @NotNull
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Map<Direction, Wall> walls;
 
     @ManyToMany

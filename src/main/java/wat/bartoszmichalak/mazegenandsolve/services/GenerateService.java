@@ -51,7 +51,8 @@ public class GenerateService {
 
         Set<Set<Integer>> mergedCellSet = new HashSet<>();
         for (Cell cell : maze.getCells()) {
-            mergedCellSet.add(Collections.singleton(cell.getCellIndex()));
+            Set<Integer> cellSet = Collections.singleton(cell.getCellIndex());
+            mergedCellSet.add(cellSet);
         }
 
         while (!isAllCellsMerged(mergedCellSet)) {
