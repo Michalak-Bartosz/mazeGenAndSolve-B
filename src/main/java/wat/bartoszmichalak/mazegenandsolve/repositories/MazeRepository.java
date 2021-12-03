@@ -11,4 +11,7 @@ public interface MazeRepository extends JpaRepository<Maze, Long> {
 
     @Override
     Optional<Maze> findById(Long id);
+
+    @Override
+    void deleteById(Long id);
 }

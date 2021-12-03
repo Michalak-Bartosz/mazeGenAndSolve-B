@@ -14,7 +14,7 @@ public class Wall {
 
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
     @NotNull
     private int wallIndex;
@@ -25,11 +25,11 @@ public class Wall {
     private Maze maze;
 
     @NotNull
-    Boolean isVisible;
+    private Boolean isVisible;
 
     @NotNull
     @ManyToMany
-    List<Cell> neighbourCells = new ArrayList<>();
+    private List<Cell> neighbourCells = new ArrayList<>();
 
     public Wall(Maze maze, int wallIndex) {
         this.maze = maze;
@@ -48,6 +48,10 @@ public class Wall {
 
     public int getWallIndex() {
         return wallIndex;
+    }
+
+    public Maze getMaze() {
+        return maze;
     }
 
     public Boolean getVisible() {

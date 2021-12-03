@@ -121,7 +121,7 @@ public class Cell {
     public void printNeighboursWalls() {
         System.out.println("Neighbour walls for cell; x: " + positionX + " | y: " + positionY + " | id: " + id + " | index: " + cellIndex);
         for (Wall wall : walls.values()) {
-            System.out.println("is visible: " + wall.isVisible + " | id: " + " | id: " + wall.getId() + " | index: " + wall.getWallIndex());
+            System.out.println("is visible: " + wall.getVisible() + " | id: " + " | id: " + wall.getId() + " | index: " + wall.getWallIndex());
         }
     }
 
@@ -130,7 +130,7 @@ public class Cell {
         Wall usedWall = new Wall();
 
         if (!printedWalls.contains(walls.get(Direction.TOP))) {
-            if (walls.get(Direction.TOP).isVisible) {
+            if (walls.get(Direction.TOP).getVisible()) {
                 cellString += " --- ";
             } else {
                 cellString += "     ";
@@ -155,11 +155,11 @@ public class Cell {
         }
 
         if (!printedWalls.contains(walls.get(Direction.LEFT)) && !printedWalls.contains(walls.get(Direction.RIGHT))) {
-            if (walls.get(Direction.LEFT).isVisible && walls.get(Direction.RIGHT).isVisible) {
+            if (walls.get(Direction.LEFT).getVisible() && walls.get(Direction.RIGHT).getVisible()) {
                 cellString += "| " + stateMarker + " |";
-            } else if (walls.get(Direction.LEFT).isVisible) {
+            } else if (walls.get(Direction.LEFT).getVisible()) {
                 cellString += "| " + stateMarker + "  ";
-            } else if (walls.get(Direction.RIGHT).isVisible) {
+            } else if (walls.get(Direction.RIGHT).getVisible()) {
                 cellString += "  " + stateMarker + "  |";
             } else {
                 cellString += "  " + stateMarker + "   ";
@@ -167,22 +167,22 @@ public class Cell {
             usedWalls.add(walls.get(Direction.LEFT));
             usedWalls.add(walls.get(Direction.RIGHT));
         } else if (printedWalls.contains(walls.get(Direction.LEFT)) && !printedWalls.contains(walls.get(Direction.RIGHT))) {
-            if (walls.get(Direction.LEFT).isVisible && walls.get(Direction.RIGHT).isVisible) {
+            if (walls.get(Direction.LEFT).getVisible() && walls.get(Direction.RIGHT).getVisible()) {
                 cellString += "  " + stateMarker + " |";
-            } else if (walls.get(Direction.LEFT).isVisible) {
+            } else if (walls.get(Direction.LEFT).getVisible()) {
                 cellString += "  " + stateMarker + "  ";
-            } else if (walls.get(Direction.RIGHT).isVisible) {
+            } else if (walls.get(Direction.RIGHT).getVisible()) {
                 cellString += "  " + stateMarker + " |";
             } else {
                 cellString += "  " + stateMarker + "  ";
             }
             usedWalls.add(walls.get(Direction.RIGHT));
         } else if (!printedWalls.contains(walls.get(Direction.LEFT)) && printedWalls.contains(walls.get(Direction.RIGHT))) {
-            if (walls.get(Direction.LEFT).isVisible && walls.get(Direction.RIGHT).isVisible) {
+            if (walls.get(Direction.LEFT).getVisible() && walls.get(Direction.RIGHT).getVisible()) {
                 cellString += "| " + stateMarker + "  ";
-            } else if (walls.get(Direction.LEFT).isVisible) {
+            } else if (walls.get(Direction.LEFT).getVisible()) {
                 cellString += "| " + stateMarker + "  ";
-            } else if (walls.get(Direction.RIGHT).isVisible) {
+            } else if (walls.get(Direction.RIGHT).getVisible()) {
                 cellString += "  " + stateMarker + "  ";
             } else {
                 cellString += "  " + stateMarker + "  ";
@@ -200,7 +200,7 @@ public class Cell {
         Wall usedWall = new Wall();
 
         if (!printedWalls.contains(walls.get(Direction.BOTTOM))) {
-            if (walls.get(Direction.BOTTOM).isVisible) {
+            if (walls.get(Direction.BOTTOM).getVisible()) {
                 cellString += " --- ";
             } else {
                 cellString += "     ";

@@ -2,6 +2,7 @@ package wat.bartoszmichalak.mazegenandsolve.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wat.bartoszmichalak.mazegenandsolve.dto.CellDto;
 import wat.bartoszmichalak.mazegenandsolve.dto.CreateMazeDto;
 import wat.bartoszmichalak.mazegenandsolve.dto.MazeDto;
 import wat.bartoszmichalak.mazegenandsolve.services.MazeService;
@@ -31,5 +32,16 @@ public class MazeController {
     @PostMapping ("/maze")
     ResponseEntity<MazeDto> createMaze(@RequestBody CreateMazeDto createMazeDto) {
         return ResponseEntity.ok(mazeService.createMaze(createMazeDto));
+    }
+
+    @DeleteMapping("/{mazeId}")
+    public ResponseEntity<Void> deleteMaze(@PathVariable Long mazeId) {
+        mazeService.deleteMaze(mazeId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{mazeId}/cells")
+    public ResponseEntity<List<CellDto>> getMazeCells(@PathVariable Long mazeId) {
+        return ResponseEntity.ok(mazeService.getMazeCells(mazeId));
     }
 }

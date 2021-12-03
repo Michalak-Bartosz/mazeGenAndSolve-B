@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
+import wat.bartoszmichalak.mazegenandsolve.dto.CellDto;
 import wat.bartoszmichalak.mazegenandsolve.dto.CreateMazeDto;
 import wat.bartoszmichalak.mazegenandsolve.dto.MazeDto;
 import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
@@ -96,8 +97,16 @@ public class MazeService {
     }
 
     public MazeDto getMaze(Long mazeId) {
-        //TODO add exception
         Maze maze = mazeRepository.findById(mazeId).orElseThrow();
         return new MazeDto(maze);
+    }
+
+    public void deleteMaze(Long mazeId) {
+        mazeRepository.deleteById(mazeId);
+    }
+
+    public List<CellDto> getMazeCells(Long mazeId) {
+        Maze maze = mazeRepository.findById(mazeId).orElseThrow();
+        return maze.getCells().stream().map(CellDto::new).collect(Collectors.toList());
     }
 }
