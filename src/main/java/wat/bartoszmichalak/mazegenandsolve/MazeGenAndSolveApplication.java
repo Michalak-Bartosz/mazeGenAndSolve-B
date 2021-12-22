@@ -49,10 +49,6 @@ public class MazeGenAndSolveApplication {
         }
         Maze maze = mazeList.get(0);
 
-        mazeRepository.save(maze);
-        cellRepository.saveAll(maze.getCells());
-        wallRepository.saveAll(maze.getWalls());
-
         System.out.println(maze.getMazeId());
         System.out.println(maze.getAlgorithmType());
         System.out.println(maze.getWidth());
@@ -123,22 +119,27 @@ public class MazeGenAndSolveApplication {
             currentMaze++;
         }
 
+        mazeRepository.save(maze);
+        cellRepository.saveAll(maze.getCells());
+        wallRepository.saveAll(maze.getWalls());
+
         currentMaze = 0;
         for (SolveAlgorithmType solveAlgorithmType : SolveAlgorithmType.values()) {
             System.out.println("\nSolve maze by: " + solveAlgorithmType.name());
             float startNano = System.nanoTime();
+            Maze currentMazeTmp = mazeList.get(currentMaze);
             switch (solveAlgorithmType) {
                 case Dijkstra:
-                    SolveService.solveByDijkstra(mazeList.get(currentMaze));
+                    SolveService.solveByDijkstra(currentMazeTmp.getCells(), currentMazeTmp.getWidth(), currentMazeTmp.getHeight(), null, null);
                     break;
                 case Astar:
-                    SolveService.solveByAstar(mazeList.get(currentMaze));
+                    SolveService.solveByAstar(currentMazeTmp.getCells(), currentMazeTmp.getWidth(), currentMazeTmp.getHeight(), null, null);
                     break;
                 case BFS:
-                    SolveService.solveByBFS(mazeList.get(currentMaze));
+                    SolveService.solveByBFS(currentMazeTmp.getCells(), currentMazeTmp.getWidth(), currentMazeTmp.getHeight(), null, null);
                     break;
                 case DFS:
-                    SolveService.solveByDFS(mazeList.get(currentMaze));
+                    SolveService.solveByDFS(currentMazeTmp.getCells(), currentMazeTmp.getWidth(), currentMazeTmp.getHeight(), null, null);
                     break;
                 default:
                     break;

@@ -1,9 +1,9 @@
 package wat.bartoszmichalak.mazegenandsolve.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
-import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
 import wat.bartoszmichalak.mazegenandsolve.entities.Wall;
 
 import java.util.*;
@@ -15,21 +15,22 @@ public class SolveService {
 
     private static final Random rand = new Random();
 
-    public static void solveByDijkstra(Maze maze) {
-        Cell startCell = getRandomStartCell(maze.getCells());
-        Cell endCell = getRandomEndCell(maze.getCells(), startCell, maze.getWidth(), maze.getHeight());
+    public static List<Cell> solveByDijkstra(List<Cell> cells, int width, int height, Cell start, Cell end) {
+        List<Cell> algorithmSteps = new Stack<>();
+        Cell startCell = getStartCell(start, cells);
+        Cell endCell = getEndCell(end, cells, startCell, width, height);
 
         System.out.println("START: " + startCell.getCellIndex());
         System.out.println("END: " + endCell.getCellIndex());
 
-        HashMap<Integer, Integer> distanceFromStartCell = initDistanceFromStartCell(startCell, maze);
+        HashMap<Integer, Integer> distanceFromStartCell = initDistanceFromStartCell(startCell, cells);
         HashMap<Integer, Integer> orderedDistanceFromStartCell = sortByDistance(distanceFromStartCell);
-        HashMap<Integer, Integer> cellsValue = initCellsValue(maze.getCells(), startCell);
-        HashMap<Integer, LinkedList<Cell>> pathToCell = initPathToCell(maze.getCells());
+        HashMap<Integer, Integer> cellsValue = initCellsValue(cells, startCell);
+        HashMap<Integer, LinkedList<Cell>> pathToCell = initPathToCell(cells);
 
         Cell currentCell;
         for (Map.Entry<Integer, Integer> distanceEntry : orderedDistanceFromStartCell.entrySet()) {
-            currentCell = maze.getCells().get(distanceEntry.getKey());
+            currentCell = cells.get(distanceEntry.getKey());
             List<Cell> neighbourCells = getConnectedNeighbourCells(currentCell);
             for (Cell cell : neighbourCells) {
                 Integer newCellValue = distanceFromStartCell.get(cell.getCellIndex()) + distanceFromStartCell.get(currentCell.getCellIndex());
@@ -41,28 +42,30 @@ public class SolveService {
             }
         }
 
-        Stack<Cell> algorithmSteps = new Stack<>();
         for (Cell cell : pathToCell.get(endCell.getCellIndex())) {
-            algorithmSteps.push(cell);
+            algorithmSteps.add(cell);
             cell.setCellState(CellState.VISITED);
         }
-        algorithmSteps.push(endCell);
+        algorithmSteps.add(endCell);
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
         printAlgorithmStepsCells(algorithmSteps);
+
+        resetCellStatus(cells);
+        return algorithmSteps;
     }
 
-    public static void solveByAstar(Maze maze) {
+    public static Stack<Cell> solveByAstar(List<Cell> cells, int width, int height, Cell start, Cell end) {
         Stack<Cell> algorithmSteps = new Stack<>();
-        Cell startCell = getRandomStartCell(maze.getCells());
-        Cell endCell = getRandomEndCell(maze.getCells(), startCell, maze.getWidth(), maze.getHeight());
+        Cell startCell = getStartCell(start, cells);
+        Cell endCell = getEndCell(end, cells, startCell, width, height);
 
         System.out.println("START: " + startCell.getCellIndex());
         System.out.println("END: " + endCell.getCellIndex());
 
-        HashMap<Integer, Integer> distanceBetweenCells = initDistanceBetweenCells(maze.getCells());
-        HashMap<Integer, Double> cellsScore = initCellsScore(maze, endCell);
-        HashMap<Integer, Double> cellsValue = initCellsValueByDistanceAndScore(maze.getCells(), distanceBetweenCells, cellsScore);
+        HashMap<Integer, Integer> distanceBetweenCells = initDistanceBetweenCells(cells);
+        HashMap<Integer, Double> cellsScore = initCellsScore(cells, endCell);
+        HashMap<Integer, Double> cellsValue = initCellsValueByDistanceAndScore(cells, distanceBetweenCells, cellsScore);
         Cell currentCell = startCell;
         algorithmSteps.push(startCell);
         List<Cell> unvisitedNeighbourCells = new ArrayList<>();
@@ -76,37 +79,43 @@ public class SolveService {
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
         printAlgorithmStepsCells(algorithmSteps);
+
+        resetCellStatus(cells);
+        return algorithmSteps;
     }
 
-    public static void solveByBFS(Maze maze) {
-        Stack<Cell> algorithmSteps = new Stack<>();
+    public static List<Cell> solveByBFS(List<Cell> cells, int width, int height, Cell start, Cell end) {
+        List<Cell> algorithmSteps = new Stack<>();
         LinkedList<Cell> linkedList = new LinkedList<>();
-        Cell startCell = getRandomStartCell(maze.getCells());
-        Cell endCell = getRandomEndCell(maze.getCells(), startCell, maze.getWidth(), maze.getHeight());
+        Cell startCell = getStartCell(start, cells);
+        Cell endCell = getEndCell(end, cells, startCell, width, height);
 
         System.out.println("START: " + startCell.getCellIndex());
         System.out.println("END: " + endCell.getCellIndex());
 
         linkedList.add(startCell);
-        addUniqueCells(linkedList, getConnectedNeighbourCells(linkedList.getFirst()));
-        algorithmSteps.push(linkedList.getFirst());
+        addUniqueCells(linkedList, getConnectedUnvisitedNeighbourCells(linkedList.getFirst()));
+        algorithmSteps.add(linkedList.getFirst());
         while (!linkedList.getFirst().equals(endCell)) {
             linkedList.getFirst().setCellState(CellState.VISITED);
             linkedList.removeFirst();
-            addUniqueCells(linkedList, getConnectedNeighbourCells(linkedList.getFirst()));
-            algorithmSteps.push(linkedList.getFirst());
+            addUniqueCells(linkedList, getConnectedUnvisitedNeighbourCells(linkedList.getFirst()));
+            algorithmSteps.add(linkedList.getFirst());
         }
 
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
         printAlgorithmStepsCells(algorithmSteps);
+
+        resetCellStatus(cells);
+        return algorithmSteps;
     }
 
-    public static void solveByDFS(Maze maze) {
+    public static Stack<Cell> solveByDFS(List<Cell> cells, int width, int height, Cell start, Cell end) {
         Stack<Cell> algorithmSteps = new Stack<>();
         Stack<Cell> stack = new Stack<>();
-        Cell startCell = getRandomStartCell(maze.getCells());
-        Cell endCell = getRandomEndCell(maze.getCells(), startCell, maze.getWidth(), maze.getHeight());
+        Cell startCell = getStartCell(start, cells);
+        Cell endCell = getEndCell(end, cells, startCell, width, height);
 
         System.out.println("START: " + startCell.getCellIndex());
         System.out.println("END: " + endCell.getCellIndex());
@@ -115,13 +124,9 @@ public class SolveService {
         algorithmSteps.push(startCell);
         while (!stack.peek().equals(endCell)) {
             stack.peek().setCellState(CellState.VISITED);
-            if (!stack.peek().getUnvisitedNeighbourCells().isEmpty()) {
-                List<Cell> connectedUnvisitedNeighbourCells = getConnectedUnvisitedNeighbourCells(stack.peek());
-                if (!connectedUnvisitedNeighbourCells.isEmpty()) {
-                    stack.push(connectedUnvisitedNeighbourCells.get(0));
-                } else {
-                    stack.pop();
-                }
+            List<Cell> connectedUnvisitedNeighbourCells = getConnectedUnvisitedNeighbourCells(stack.peek());
+            if (!connectedUnvisitedNeighbourCells.isEmpty()) {
+                stack.push(connectedUnvisitedNeighbourCells.get(0));
             } else {
                 stack.pop();
             }
@@ -131,17 +136,20 @@ public class SolveService {
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
         printAlgorithmStepsCells(algorithmSteps);
+
+        resetCellStatus(cells);
+        return algorithmSteps;
     }
 
     //TODO add throw exception
-    private static Cell getRandomStartCell(List<Cell> cellList) {
+    private static Cell getStartCell(Cell start, List<Cell> cellList) {
         List<Cell> cells = cellList.stream().filter(c -> c.getPositionX() == 0 || c.getPositionY() == 0).collect(Collectors.toList());
-        return cells.get(rand.nextInt(cells.size()));
+        return ObjectUtils.isEmpty(start) ? cells.get(rand.nextInt(cells.size())) : start;
     }
 
-    private static Cell getRandomEndCell(List<Cell> cellList, Cell startCell, int width, int height) {
+    private static Cell getEndCell(Cell end, List<Cell> cellList, Cell startCell, int width, int height) {
         List<Cell> cells = cellList.stream().filter(c -> (c.getPositionX() == width - 1 || c.getPositionY() == height - 1) && !c.equals(startCell)).collect(Collectors.toList());
-        return cells.get(rand.nextInt(cells.size()));
+        return ObjectUtils.isEmpty(end) ? cells.get(rand.nextInt(cells.size())) : end;
     }
 
     private static List<Cell> getConnectedNeighbourCells(Cell baseCell) {
@@ -202,7 +210,7 @@ public class SolveService {
         return temp;
     }
 
-    private static HashMap<Integer, Integer> initDistanceFromStartCell(Cell startCell, Maze maze) {
+    private static HashMap<Integer, Integer> initDistanceFromStartCell(Cell startCell, List<Cell> cells) {
         HashMap<Integer, Integer> distanceFromStartCell = new HashMap<>();
         distanceFromStartCell.put(startCell.getCellIndex(), 0);
         startCell.setCellState(CellState.VISITED);
@@ -218,7 +226,7 @@ public class SolveService {
             cellsToSetDistance = new ArrayList<>(neighbourCells);
             actualDistance++;
         }
-        maze.resetCellStatus();
+        resetCellStatus(cells);
         return distanceFromStartCell;
     }
 
@@ -247,12 +255,12 @@ public class SolveService {
         return cellsValue;
     }
 
-    private static HashMap<Integer, Double> initCellsScore(Maze maze, Cell endCell) {
+    private static HashMap<Integer, Double> initCellsScore(List<Cell> cells, Cell endCell) {
         HashMap<Integer, Double> cellsScore = new HashMap<>();
         cellsScore.put(endCell.getCellIndex(), (double) 0);
         double x1 = endCell.getPositionX();
         double y1 = endCell.getPositionY();
-        for (Cell cell : maze.getCells()) {
+        for (Cell cell : cells) {
             double x2 = cell.getPositionX();
             double y2 = cell.getPositionY();
             if (!cell.equals(endCell)) {
@@ -264,7 +272,7 @@ public class SolveService {
     }
 
     //Print algorithm steps
-    private static void printAlgorithmStepsCells(Stack<Cell> algorithmSteps) {
+    private static void printAlgorithmStepsCells(List<Cell> algorithmSteps) {
         System.out.println("\nAlgorithm Steps (Cell indexes): ");
         for (Cell cell : algorithmSteps) {
             System.out.print(cell.getCellIndex() + " -> ");
@@ -278,5 +286,11 @@ public class SolveService {
             System.out.print(wall.getWallIndex() + " -> ");
         }
         System.out.println();
+    }
+
+    public static void resetCellStatus(List<Cell> cells) {
+        for (Cell cell : cells) {
+            cell.setCellState(CellState.UNVISITED);
+        }
     }
 }

@@ -17,7 +17,7 @@ public class CellDto {
     private final int cellIndex;
     private final int positionX;
     private final int positionY;
-    private final CellState cellState;
+    private CellState cellState;
     private final Map<Direction, WallDto> walls;
     private final List<Long> neighbourCellsId;
 
@@ -72,5 +72,9 @@ public class CellDto {
 
     public List<Long> getNeighbourCellsId() {
         return neighbourCellsId;
+    }
+
+    public void setCellState (CellState cellState) {
+        this.cellState = cellState;
     }
 }

@@ -2,7 +2,6 @@ package wat.bartoszmichalak.mazegenandsolve.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
-import org.springframework.data.repository.NoRepositoryBean;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.Direction;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
@@ -32,11 +31,16 @@ public class Maze {
     @NotNull
     @OneToMany(mappedBy = "maze", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
-    private final List<Cell> cells = new ArrayList<>();
+    private List<Cell> cells = new ArrayList<>();
 
     @NotNull
     @OneToMany(mappedBy = "maze", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private final List<Wall> walls = new ArrayList<>();
+    private List<Wall> walls = new ArrayList<>();
+
+    @NotNull
+    @OneToMany(mappedBy = "mazeId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<SolvedMaze> solvedMazes = new ArrayList<>();
 
     public Maze(int height, int width, GenerateAlgorithmType algorithmType) {
         this.height = height;
@@ -47,6 +51,15 @@ public class Maze {
     }
 
     public Maze() {
+    }
+
+    public Maze(Maze maze) {
+        this.height = maze.getHeight();
+        this.width = maze.getWidth();
+        this.algorithmType = maze.getAlgorithmType();
+        this.cells = maze.getCells();
+        this.walls = maze.getWalls();
+        this.solvedMazes = maze.getSolvedMazes();
     }
 
     private void initMazeWallsList() {
@@ -107,13 +120,13 @@ public class Maze {
         List<Cell> xList = cells.stream().filter(c -> c.getPositionX() == x).collect(Collectors.toList());
         List<Cell> yList = cells.stream().filter(c -> c.getPositionY() == y).collect(Collectors.toList());
 
-        neighbourCells.addAll(getNeighbourCellByTheRow(x, y, yList));
-        neighbourCells.addAll(getNeighbourCellByTheColumn(x, y, xList));
+        neighbourCells.addAll(getNeighbourCellByTheRow(x, yList));
+        neighbourCells.addAll(getNeighbourCellByTheColumn(y, xList));
 
         return neighbourCells;
     }
 
-    private List<Cell> getNeighbourCellByTheRow(int x, int y, List<Cell> yList) {
+    private List<Cell> getNeighbourCellByTheRow(int x, List<Cell> yList) {
         List<Cell> neighbourCells = new ArrayList<>();
         if (x == 0) {
             neighbourCells.add(yList.stream().filter(c -> c.getPositionX() == (x + 1)).findFirst().orElseThrow());
@@ -126,7 +139,7 @@ public class Maze {
         return neighbourCells;
     }
 
-    private List<Cell> getNeighbourCellByTheColumn(int x, int y, List<Cell> xList) {
+    private List<Cell> getNeighbourCellByTheColumn(int y, List<Cell> xList) {
         List<Cell> neighbourCells = new ArrayList<>();
         if (y == 0) {
             neighbourCells.add(xList.stream().filter(c -> c.getPositionY() == (y + 1)).findFirst().orElseThrow());
@@ -175,12 +188,6 @@ public class Maze {
         return this.cells.stream().anyMatch(c -> c.getCellState().equals(CellState.UNVISITED));
     }
 
-    public void resetCellStatus() {
-        for (Cell cell: this.cells) {
-            cell.setCellState(CellState.UNVISITED);
-        }
-    }
-
     public void printMazeASCII() {
         List<Wall> printedWalls = new ArrayList<>();
         for (int y = 0; y < height; y++) {
@@ -206,5 +213,13 @@ public class Maze {
             }
         }
         System.out.println();
+    }
+
+    public List<SolvedMaze> getSolvedMazes() {
+        return solvedMazes;
+    }
+
+    public void setSolveMazes(List<SolvedMaze> solvedMazes) {
+        this.solvedMazes = solvedMazes;
     }
 }

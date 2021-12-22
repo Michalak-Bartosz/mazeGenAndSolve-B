@@ -17,8 +17,10 @@ public class Cell {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "maze_id")
     private Maze maze;
+
+    @ManyToOne
+    private SolvedMaze solvedMazes;
 
     @NotNull
     private int cellIndex;
@@ -209,5 +211,9 @@ public class Cell {
         }
         System.out.print(cellString);
         return usedWall;
+    }
+
+    public SolvedMaze getSolvedMazes() {
+        return solvedMazes;
     }
 }

@@ -2,17 +2,20 @@ package wat.bartoszmichalak.mazegenandsolve.services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
-import wat.bartoszmichalak.mazegenandsolve.dto.CellDto;
-import wat.bartoszmichalak.mazegenandsolve.dto.CreateMazeDto;
-import wat.bartoszmichalak.mazegenandsolve.dto.MazeDto;
+import wat.bartoszmichalak.mazegenandsolve.dto.*;
+import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
 import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
+import wat.bartoszmichalak.mazegenandsolve.entities.SolvedMaze;
 import wat.bartoszmichalak.mazegenandsolve.repositories.CellRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.MazeRepository;
+import wat.bartoszmichalak.mazegenandsolve.repositories.SolvedMazeRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.WallRepository;
 
 import java.util.List;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,19 +24,16 @@ public class MazeService {
     private final MazeRepository mazeRepository;
     private final CellRepository cellRepository;
     private final WallRepository wallRepository;
-    private final MazeCellService mazeCellService;
-    private final SolveService solveService;
+    private final SolvedMazeRepository solvedMazeRepository;
 
     public MazeService(MazeRepository mazeRepository,
                        CellRepository cellRepository,
                        WallRepository wallRepository,
-                       MazeCellService mazeCellService,
-                       SolveService solveService) {
+                       SolvedMazeRepository solvedMazeRepository) {
         this.mazeRepository = mazeRepository;
         this.cellRepository = cellRepository;
         this.wallRepository = wallRepository;
-        this.mazeCellService = mazeCellService;
-        this.solveService = solveService;
+        this.solvedMazeRepository = solvedMazeRepository;
     }
 
     @Transactional
@@ -70,25 +70,43 @@ public class MazeService {
     }
 
     //TODO add exception
-    public void solveMaze(Long mazeId, SolveAlgorithmType solveAlgorithmType) {
+    public SolvedMazeDto solveMaze(SolveParamsDto solveParamsDto) {
+        Long mazeId = solveParamsDto.getMazeId();
+        SolveAlgorithmType solveAlgorithmType = solveParamsDto.getSolveAlgorithmType();
+
         Maze maze = mazeRepository.findById(mazeId).orElseThrow();
+        List<Cell> cells = maze.getCells();
+        List<Cell> algorithmSteps = new Stack<>();
+
+        int width = maze.getWidth();
+        int height = maze.getHeight();
+        Cell startCell = extractCell(solveParamsDto.getStartCellId());
+        Cell endCell = extractCell(solveParamsDto.getEndCellId());
 
         switch (solveAlgorithmType) {
             case Dijkstra:
-                solveService.solveByDijkstra(maze);
+                algorithmSteps = SolveService.solveByDijkstra(cells, width, height, startCell, endCell);
                 break;
             case Astar:
-                solveService.solveByAstar(maze);
+                algorithmSteps = SolveService.solveByAstar(cells, width, height, startCell, endCell);
                 break;
             case BFS:
-                solveService.solveByBFS(maze);
+                algorithmSteps = SolveService.solveByBFS(cells, width, height, startCell, endCell);
                 break;
             case DFS:
-                solveService.solveByDFS(maze);
+                algorithmSteps = SolveService.solveByDFS(cells, width, height, startCell, endCell);
                 break;
             default:
                 break;
         }
+
+        SolvedMaze solvedMaze = new SolvedMaze(maze.getMazeId(), solveAlgorithmType, algorithmSteps);
+        solvedMazeRepository.save(solvedMaze);
+        return new SolvedMazeDto(solvedMaze);
+    }
+
+    private Cell extractCell(Long cellId) {
+        return ObjectUtils.isEmpty(cellId) ? null : cellRepository.findById(cellId).orElse(null);
     }
 
     public List<MazeDto> getAllMazes() {
@@ -108,5 +126,33 @@ public class MazeService {
     public List<CellDto> getMazeCells(Long mazeId) {
         Maze maze = mazeRepository.findById(mazeId).orElseThrow();
         return maze.getCells().stream().map(CellDto::new).collect(Collectors.toList());
+    }
+
+    public List<CellDto> getSolveMazeCells(Long mazeId, Long solveId) {
+        Maze maze = mazeRepository.findById(mazeId).orElseThrow();
+        SolvedMaze solvedMaze = maze.getSolvedMazes().stream()
+                .filter(sMaze -> sMaze.getSolveId().equals(solveId))
+                .findFirst()
+                .orElseThrow();
+        return solvedMaze.getAlgorithmSteps().stream()
+                .map(CellDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public SolvedMazeDto getSolveMaze(Long solveId) {
+        return solvedMazeRepository.findById(solveId)
+                .map(SolvedMazeDto::new)
+                .orElseThrow();
+    }
+
+    public List<SolvedMazeDto> getAllSolveMazes(Long mazeId) {
+        Maze maze = mazeRepository.findById(mazeId).orElseThrow();
+        return maze.getSolvedMazes().stream()
+                .map(SolvedMazeDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteSolve(Long solveId) {
+        solvedMazeRepository.deleteById(solveId);
     }
 }
