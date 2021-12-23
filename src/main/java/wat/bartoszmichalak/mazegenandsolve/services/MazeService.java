@@ -3,6 +3,7 @@ package wat.bartoszmichalak.mazegenandsolve.services;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StopWatch;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.dto.*;
@@ -13,7 +14,11 @@ import wat.bartoszmichalak.mazegenandsolve.repositories.CellRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.MazeRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.SolvedMazeRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.WallRepository;
+import wat.bartoszmichalak.mazegenandsolve.services.util.GenerateHelper;
+import wat.bartoszmichalak.mazegenandsolve.services.util.SolveHelper;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -37,35 +42,39 @@ public class MazeService {
     }
 
     @Transactional
-    public MazeDto createMaze(CreateMazeDto createMazeDto) {
+    public MazeDto generateMaze(GenerateMazeDto generateMazeDto) {
 
-        int width = createMazeDto.getWidth();
-        int height = createMazeDto.getHeight();
-        GenerateAlgorithmType generateAlgorithmType = createMazeDto.getAlgorithmType();
+        int width = generateMazeDto.getWidth();
+        int height = generateMazeDto.getHeight();
+        GenerateAlgorithmType generateAlgorithmType = generateMazeDto.getAlgorithmType();
 
         Maze maze = new Maze(height, width, generateAlgorithmType);
 
+        StopWatch stopWatch = new StopWatch();
         switch (generateAlgorithmType) {
             case RandomDFS:
-                GenerateService.generateByRandomDFS(maze);
+                GenerateHelper.generateByRandomDFS(maze, stopWatch);
                 break;
             case RandomKruskal:
-                GenerateService.generateByRandomKruskal(maze);
+                GenerateHelper.generateByRandomKruskal(maze, stopWatch);
                 break;
             case RandomPrim:
-                GenerateService.generateByRandomPrim(maze);
+                GenerateHelper.generateByRandomPrim(maze, stopWatch);
                 break;
             case AldousBroder:
-                GenerateService.generateByAldousBroder(maze);
+                GenerateHelper.generateByAldousBroder(maze, stopWatch);
                 break;
             default:
                 break;
         }
+        BigDecimal generateTime = BigDecimal.valueOf(stopWatch.getTotalTimeSeconds())
+                .setScale(6, RoundingMode.HALF_EVEN);
+        maze.setGenerateTime(Double.parseDouble(String.valueOf(generateTime)));
 
         mazeRepository.save(maze);
         cellRepository.saveAll(maze.getCells());
         wallRepository.saveAll(maze.getWalls());
-        //TODO add exception
+
         return new MazeDto(maze);
     }
 
@@ -83,24 +92,34 @@ public class MazeService {
         Cell startCell = extractCell(solveParamsDto.getStartCellId());
         Cell endCell = extractCell(solveParamsDto.getEndCellId());
 
+        StopWatch stopWatch = new StopWatch();
         switch (solveAlgorithmType) {
             case Dijkstra:
-                algorithmSteps = SolveService.solveByDijkstra(cells, width, height, startCell, endCell);
+                algorithmSteps = SolveHelper.solveByDijkstra(cells, width, height, startCell, endCell, stopWatch);
                 break;
             case Astar:
-                algorithmSteps = SolveService.solveByAstar(cells, width, height, startCell, endCell);
+                algorithmSteps = SolveHelper.solveByAstar(cells, width, height, startCell, endCell, stopWatch);
                 break;
             case BFS:
-                algorithmSteps = SolveService.solveByBFS(cells, width, height, startCell, endCell);
+                algorithmSteps = SolveHelper.solveByBFS(cells, width, height, startCell, endCell, stopWatch);
                 break;
             case DFS:
-                algorithmSteps = SolveService.solveByDFS(cells, width, height, startCell, endCell);
+                algorithmSteps = SolveHelper.solveByDFS(cells, width, height, startCell, endCell, stopWatch);
                 break;
             default:
                 break;
         }
+        BigDecimal solveTimeFactor = BigDecimal.valueOf(stopWatch.getTotalTimeSeconds())
+                .setScale(6, RoundingMode.HALF_EVEN);
 
-        SolvedMaze solvedMaze = new SolvedMaze(maze.getMazeId(), solveAlgorithmType, algorithmSteps);
+        double solveTime = Double.parseDouble(String.valueOf(solveTimeFactor));
+
+        System.out.println("SOLVE TIME: " + solveTime);
+        SolvedMaze solvedMaze = new SolvedMaze(maze.getMazeId(),
+                solveAlgorithmType,
+                algorithmSteps,
+                solveTime);
+
         solvedMazeRepository.save(solvedMaze);
         return new SolvedMazeDto(solvedMaze);
     }

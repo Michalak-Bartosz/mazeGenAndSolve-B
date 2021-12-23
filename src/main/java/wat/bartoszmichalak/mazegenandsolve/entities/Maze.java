@@ -2,6 +2,8 @@ package wat.bartoszmichalak.mazegenandsolve.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.Direction;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
@@ -12,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 @Entity(name = "maze")
 public class Maze {
 
@@ -27,6 +31,9 @@ public class Maze {
 
     @NotNull
     private GenerateAlgorithmType algorithmType;
+
+    @NotNull
+    private double generateTime;
 
     @NotNull
     @OneToMany(mappedBy = "maze", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -53,15 +60,6 @@ public class Maze {
     public Maze() {
     }
 
-    public Maze(Maze maze) {
-        this.height = maze.getHeight();
-        this.width = maze.getWidth();
-        this.algorithmType = maze.getAlgorithmType();
-        this.cells = maze.getCells();
-        this.walls = maze.getWalls();
-        this.solvedMazes = maze.getSolvedMazes();
-    }
-
     private void initMazeWallsList() {
         for (int y = 0; y < 2 * width * height + width + height; y++) {
             this.walls.add(new Wall(this, y));
@@ -69,7 +67,7 @@ public class Maze {
     }
 
     private void initMazeCellsList() {
-        HashMap<Direction, Wall> setOfWalls = new HashMap<>();
+        HashMap<Direction, Wall> setOfWalls;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 setOfWalls = getSetOfWallsForCell(x, y);
@@ -82,7 +80,7 @@ public class Maze {
     private HashMap<Direction, Wall> getSetOfWallsForCell(int x, int y) {
         HashMap<Direction, Wall> wallList = new HashMap<>();
 
-        if(x == 0) {
+        if (x == 0) {
             wallList.put(Direction.LEFT, walls.get(y));
             wallList.put(Direction.RIGHT, walls.get(2 * (width + height) + y));
         } else if (x == width - 1) {
@@ -93,12 +91,12 @@ public class Maze {
             wallList.put(Direction.RIGHT, walls.get(2 * (width + height) + x * height + y));
         }
 
-        if(y == 0) {
+        if (y == 0) {
             wallList.put(Direction.TOP, walls.get(2 * height + x));
             wallList.put(Direction.BOTTOM, walls.get(2 * width + width * height + height + x));
         } else if (y == height - 1) {
             wallList.put(Direction.BOTTOM, walls.get(2 * height + width + x));
-            wallList.put(Direction.TOP, walls.get(2* (width + height) + (width - 1) * height + (y - 1) * width + x));
+            wallList.put(Direction.TOP, walls.get(2 * (width + height) + (width - 1) * height + (y - 1) * width + x));
         } else {
             wallList.put(Direction.TOP, walls.get(2 * width + width * height + height + (y - 1) * width + x));
             wallList.put(Direction.BOTTOM, walls.get(2 * width + width * height + height + y * width + x));
@@ -152,74 +150,7 @@ public class Maze {
         return neighbourCells;
     }
 
-    private void setCellsNeighbours() {
-
-    }
-
-    private void setWallsNeighbours() {
-
-    }
-
-    public Long getMazeId() {
-        return this.mazeId;
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public GenerateAlgorithmType getAlgorithmType() {
-        return this.algorithmType;
-    }
-
-    public List<Cell> getCells() {
-        return this.cells;
-    }
-
-    public List<Wall> getWalls() {
-        return this.walls;
-    }
-
     public boolean hasUnvisitedCells() {
         return this.cells.stream().anyMatch(c -> c.getCellState().equals(CellState.UNVISITED));
-    }
-
-    public void printMazeASCII() {
-        List<Wall> printedWalls = new ArrayList<>();
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int finalX = x;
-                int finalY = y;
-                Cell cell = cells.stream().filter(c -> c.getPositionY() == finalY && c.getPositionX() == finalX).findFirst().orElseThrow();
-                printedWalls.add(cell.printCellASCIITop(printedWalls));
-            }
-            System.out.println();
-            for (int x = 0; x < width; x++) {
-                int finalX = x;
-                int finalY = y;
-                Cell cell = cells.stream().filter(c -> c.getPositionY() == finalY && c.getPositionX() == finalX).findFirst().orElseThrow();
-                printedWalls.addAll(cell.printCellASCIIMiddle(printedWalls));
-            }
-            System.out.println();
-            for (int x = 0; x < width; x++) {
-                int finalX = x;
-                int finalY = y;
-                Cell cell = cells.stream().filter(c -> c.getPositionY() == finalY && c.getPositionX() == finalX).findFirst().orElseThrow();
-                printedWalls.add(cell.printCellASCIIBottom(printedWalls));
-            }
-        }
-        System.out.println();
-    }
-
-    public List<SolvedMaze> getSolvedMazes() {
-        return solvedMazes;
-    }
-
-    public void setSolveMazes(List<SolvedMaze> solvedMazes) {
-        this.solvedMazes = solvedMazes;
     }
 }

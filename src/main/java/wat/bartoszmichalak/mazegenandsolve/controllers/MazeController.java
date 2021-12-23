@@ -49,8 +49,8 @@ public class MazeController {
     }
 
     @PostMapping("/create")
-    ResponseEntity<MazeDto> createMaze(@RequestBody CreateMazeDto createMazeDto) {
-        return ResponseEntity.ok(mazeService.createMaze(createMazeDto));
+    ResponseEntity<MazeDto> createMaze(@RequestBody GenerateMazeDto generateMazeDto) {
+        return ResponseEntity.ok(mazeService.generateMaze(generateMazeDto));
     }
 
     @PostMapping("/solve")

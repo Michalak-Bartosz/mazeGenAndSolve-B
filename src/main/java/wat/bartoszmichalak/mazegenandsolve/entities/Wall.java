@@ -1,14 +1,16 @@
 package wat.bartoszmichalak.mazegenandsolve.entities;
 
 import com.sun.istack.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
-import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.Direction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Getter
+@Setter
 @Entity(name = "wall")
 public class Wall {
 
@@ -42,30 +44,6 @@ public class Wall {
 
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public int getWallIndex() {
-        return wallIndex;
-    }
-
-    public Maze getMaze() {
-        return maze;
-    }
-
-    public Boolean getVisible() {
-        return isVisible;
-    }
-
-    public void setVisible(Boolean visible) {
-        isVisible = visible;
-    }
-
-    public List<Cell> getNeighbourCells() {
-        return neighbourCells;
-    }
-
     public void addNeighbourMazeCell(Cell cell) {
         neighbourCells.add(cell);
     }
@@ -77,15 +55,9 @@ public class Wall {
     public boolean hasUnvisitedNeighbourCell() {
         return neighbourCells.stream().anyMatch(c -> c.getCellState().equals(CellState.UNVISITED));
     }
+
     //TODO Add exception throw
     public Cell getUnvisitedNeighbourCell() {
         return neighbourCells.stream().filter(c -> c.getCellState().equals(CellState.UNVISITED)).findFirst().orElseThrow();
-    }
-
-    public void printNeighbourMazeCells() {
-        System.out.println("Neighbour cells for wall id: " + id + " | index: " + wallIndex);
-        for (Cell cell : neighbourCells) {
-            System.out.println("x: " + cell.getPositionX() + " | y: " + cell.getPositionY() + " | id: " + cell.getId() + " | index: " + cell.getCellIndex());
-        }
     }
 }

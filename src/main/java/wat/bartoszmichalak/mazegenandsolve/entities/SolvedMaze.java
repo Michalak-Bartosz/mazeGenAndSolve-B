@@ -1,11 +1,13 @@
 package wat.bartoszmichalak.mazegenandsolve.entities;
 
 import com.sun.istack.NotNull;
+import lombok.Getter;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
 
 import javax.persistence.*;
 import java.util.List;
 
+@Getter
 @Entity(name = "solveMaze")
 public class SolvedMaze {
 
@@ -20,32 +22,19 @@ public class SolvedMaze {
     private SolveAlgorithmType solveAlgorithmType;
 
     @NotNull
+    private double solveTime;
+
+    @NotNull
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Cell> algorithmSteps;
 
-    public SolvedMaze(Long mazeId, SolveAlgorithmType solveAlgorithmType, List<Cell> algorithmSteps) {
+    public SolvedMaze(Long mazeId, SolveAlgorithmType solveAlgorithmType, List<Cell> algorithmSteps, double solveTime) {
         this.mazeId = mazeId;
         this.solveAlgorithmType = solveAlgorithmType;
         this.algorithmSteps = algorithmSteps;
+        this.solveTime = solveTime;
     }
 
     public SolvedMaze() {
-
-    }
-
-    public List<Cell> getAlgorithmSteps() {
-        return algorithmSteps;
-    }
-
-    public Long getSolveId() {
-        return solveId;
-    }
-
-    public Long getMazeId() {
-        return mazeId;
-    }
-
-    public SolveAlgorithmType getSolveAlgorithmType() {
-        return solveAlgorithmType;
     }
 }

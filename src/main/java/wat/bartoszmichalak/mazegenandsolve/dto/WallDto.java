@@ -1,11 +1,13 @@
 package wat.bartoszmichalak.mazegenandsolve.dto;
 
+import lombok.Getter;
 import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
 import wat.bartoszmichalak.mazegenandsolve.entities.Wall;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 public class WallDto {
 
     private final Long id;
@@ -18,30 +20,10 @@ public class WallDto {
         this.id = wall.getId();
         this.wallIndex = wall.getWallIndex();
         this.mazeId = wall.getMaze().getMazeId();
-        this.isVisible = wall.getVisible();
+        this.isVisible = wall.getIsVisible();
         this.neighbourCellsId = wall.getNeighbourCells()
                 .stream()
                 .map(Cell::getId)
                 .collect(Collectors.toList());
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public int getWallIndex() {
-        return wallIndex;
-    }
-
-    public Long getMazeId() {
-        return mazeId;
-    }
-
-    public Boolean getVisible() {
-        return isVisible;
-    }
-
-    public List<Long> getNeighbourCellsId() {
-        return neighbourCellsId;
     }
 }

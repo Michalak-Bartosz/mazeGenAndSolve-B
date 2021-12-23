@@ -1,5 +1,6 @@
 package wat.bartoszmichalak.mazegenandsolve.dto;
 
+import lombok.Getter;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
@@ -7,6 +8,7 @@ import wat.bartoszmichalak.mazegenandsolve.entities.SolvedMaze;
 
 import java.util.List;
 
+@Getter
 public class SolveParamsDto {
     private Long mazeId;
     private SolveAlgorithmType solveAlgorithmType;
@@ -21,22 +23,6 @@ public class SolveParamsDto {
         this.solveAlgorithmType = solvedMaze.getSolveAlgorithmType();
         this.startCellId = extractStartCellId(solvedMaze.getAlgorithmSteps());
         this.endCellId = extractEndCellId(solvedMaze.getAlgorithmSteps());
-    }
-
-    public Long getMazeId() {
-        return mazeId;
-    }
-
-    public SolveAlgorithmType getSolveAlgorithmType() {
-        return solveAlgorithmType;
-    }
-
-    public Long getStartCellId() {
-        return startCellId;
-    }
-
-    public Long getEndCellId() {
-        return endCellId;
     }
 
     private Long extractStartCellId(List<Cell> algorithmSteps) {

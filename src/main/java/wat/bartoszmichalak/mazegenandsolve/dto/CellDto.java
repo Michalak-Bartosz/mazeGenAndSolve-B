@@ -1,5 +1,6 @@
 package wat.bartoszmichalak.mazegenandsolve.dto;
 
+import lombok.Getter;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.Direction;
 import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Getter
 public class CellDto {
 
     private final Long id;
@@ -17,7 +19,7 @@ public class CellDto {
     private final int cellIndex;
     private final int positionX;
     private final int positionY;
-    private CellState cellState;
+    private final CellState cellState;
     private final Map<Direction, WallDto> walls;
     private final List<Long> neighbourCellsId;
 
@@ -40,41 +42,5 @@ public class CellDto {
         walls.forEach((direction, wall) ->
                 wallsFactory.put(direction, new WallDto(wall)));
         return wallsFactory;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getMazeId() {
-        return mazeId;
-    }
-
-    public int getCellIndex() {
-        return cellIndex;
-    }
-
-    public int getPositionX() {
-        return positionX;
-    }
-
-    public int getPositionY() {
-        return positionY;
-    }
-
-    public CellState getCellState() {
-        return cellState;
-    }
-
-    public Map<Direction, WallDto> getWalls() {
-        return walls;
-    }
-
-    public List<Long> getNeighbourCellsId() {
-        return neighbourCellsId;
-    }
-
-    public void setCellState (CellState cellState) {
-        this.cellState = cellState;
     }
 }

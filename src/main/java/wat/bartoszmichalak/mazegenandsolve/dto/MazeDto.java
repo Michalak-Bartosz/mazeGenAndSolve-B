@@ -1,34 +1,22 @@
 package wat.bartoszmichalak.mazegenandsolve.dto;
 
+import lombok.Getter;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
 
+@Getter
 public class MazeDto {
-    private final Long id;
+    private final Long mazeId;
     private final int height;
     private final int width;
-    private final GenerateAlgorithmType algorithmType;
+    private final GenerateAlgorithmType genAlgorithmType;
+    private final double generateTime;
 
     public MazeDto(Maze maze) {
-        id = maze.getMazeId();
-        height = maze.getHeight();
-        width = maze.getWidth();
-        algorithmType = maze.getAlgorithmType();
-    }
-
-    public GenerateAlgorithmType getAlgorithmType() {
-        return algorithmType;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public Long getId() {
-        return id;
+        this.mazeId = maze.getMazeId();
+        this.height = maze.getHeight();
+        this.width = maze.getWidth();
+        this.genAlgorithmType = maze.getAlgorithmType();
+        this.generateTime = maze.getGenerateTime();
     }
 }

@@ -19,9 +19,6 @@ public class Cell {
     @ManyToOne
     private Maze maze;
 
-    @ManyToOne
-    private SolvedMaze solvedMazes;
-
     @NotNull
     private int cellIndex;
 
@@ -111,109 +108,5 @@ public class Cell {
 
     public List<Cell> getNeighbourCells() {
         return this.neighbourCells;
-    }
-
-    public void printNeighboursCells() {
-        System.out.println("Neighbour cells for cell; x: " + positionX + " | y: " + positionY + " | id: " + id + " | index: " + cellIndex);
-        for (Cell cell : neighbourCells) {
-            System.out.println("x: " + cell.getPositionX() + " | y: " + cell.getPositionY() + " | id: " + cell.getId() + " | index: " + cell.getCellIndex());
-        }
-    }
-
-    public void printNeighboursWalls() {
-        System.out.println("Neighbour walls for cell; x: " + positionX + " | y: " + positionY + " | id: " + id + " | index: " + cellIndex);
-        for (Wall wall : walls.values()) {
-            System.out.println("is visible: " + wall.getVisible() + " | id: " + " | id: " + wall.getId() + " | index: " + wall.getWallIndex());
-        }
-    }
-
-    public Wall printCellASCIITop(List<Wall> printedWalls) {
-        String cellString = "";
-        Wall usedWall = new Wall();
-
-        if (!printedWalls.contains(walls.get(Direction.TOP))) {
-            if (walls.get(Direction.TOP).getVisible()) {
-                cellString += " --- ";
-            } else {
-                cellString += "     ";
-            }
-            usedWall = walls.get(Direction.TOP);
-        }
-        System.out.print(cellString);
-        return usedWall;
-    }
-
-    public List<Wall> printCellASCIIMiddle(List<Wall> printedWalls) {
-        String cellString = "";
-        List<Wall> usedWalls = new ArrayList<>();
-
-        String stateMarker = " ";
-        if (this.cellState == CellState.START){
-            stateMarker = "S";
-        } else if (this.cellState == CellState.END) {
-            stateMarker = "E";
-        } else if (this.cellState == CellState.VISITED) {
-            stateMarker = "X";
-        }
-
-        if (!printedWalls.contains(walls.get(Direction.LEFT)) && !printedWalls.contains(walls.get(Direction.RIGHT))) {
-            if (walls.get(Direction.LEFT).getVisible() && walls.get(Direction.RIGHT).getVisible()) {
-                cellString += "| " + stateMarker + " |";
-            } else if (walls.get(Direction.LEFT).getVisible()) {
-                cellString += "| " + stateMarker + "  ";
-            } else if (walls.get(Direction.RIGHT).getVisible()) {
-                cellString += "  " + stateMarker + "  |";
-            } else {
-                cellString += "  " + stateMarker + "   ";
-            }
-            usedWalls.add(walls.get(Direction.LEFT));
-            usedWalls.add(walls.get(Direction.RIGHT));
-        } else if (printedWalls.contains(walls.get(Direction.LEFT)) && !printedWalls.contains(walls.get(Direction.RIGHT))) {
-            if (walls.get(Direction.LEFT).getVisible() && walls.get(Direction.RIGHT).getVisible()) {
-                cellString += "  " + stateMarker + " |";
-            } else if (walls.get(Direction.LEFT).getVisible()) {
-                cellString += "  " + stateMarker + "  ";
-            } else if (walls.get(Direction.RIGHT).getVisible()) {
-                cellString += "  " + stateMarker + " |";
-            } else {
-                cellString += "  " + stateMarker + "  ";
-            }
-            usedWalls.add(walls.get(Direction.RIGHT));
-        } else if (!printedWalls.contains(walls.get(Direction.LEFT)) && printedWalls.contains(walls.get(Direction.RIGHT))) {
-            if (walls.get(Direction.LEFT).getVisible() && walls.get(Direction.RIGHT).getVisible()) {
-                cellString += "| " + stateMarker + "  ";
-            } else if (walls.get(Direction.LEFT).getVisible()) {
-                cellString += "| " + stateMarker + "  ";
-            } else if (walls.get(Direction.RIGHT).getVisible()) {
-                cellString += "  " + stateMarker + "  ";
-            } else {
-                cellString += "  " + stateMarker + "  ";
-            }
-            usedWalls.add(walls.get(Direction.LEFT));
-        } else {
-            cellString += stateMarker + "  ";
-        }
-        System.out.print(cellString);
-        return usedWalls;
-    }
-
-    public Wall printCellASCIIBottom(List<Wall> printedWalls) {
-        String cellString = "";
-        Wall usedWall = new Wall();
-
-        if (!printedWalls.contains(walls.get(Direction.BOTTOM))) {
-            if (walls.get(Direction.BOTTOM).getVisible()) {
-                cellString += " --- ";
-            } else {
-                cellString += "     ";
-            }
-            usedWall = walls.get(Direction.BOTTOM);
-        }
-        System.out.print(cellString);
-        return usedWall;
-    }
-
-    public SolvedMaze getSolvedMazes() {
-        return solvedMazes;
     }
 }
