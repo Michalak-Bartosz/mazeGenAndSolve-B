@@ -21,9 +21,6 @@ public class SolveHelper {
         Cell endCell = getEndCell(end, cells, startCell, width, height);
         Cell currentCell;
 
-        System.out.println("START: " + startCell.getCellIndex());
-        System.out.println("END: " + endCell.getCellIndex());
-
         HashMap<Integer, Integer> distanceFromStartCell = initDistanceFromStartCell(startCell, cells);
         HashMap<Integer, Integer> orderedDistanceFromStartCell = sortByDistance(distanceFromStartCell);
         HashMap<Integer, Integer> cellsValue = initCellsValue(cells, startCell);
@@ -51,7 +48,6 @@ public class SolveHelper {
         algorithmSteps.add(endCell);
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
-        printAlgorithmStepsCells(algorithmSteps);
 
         resetCellStatus(cells);
         return algorithmSteps;
@@ -61,9 +57,6 @@ public class SolveHelper {
         Stack<Cell> algorithmSteps = new Stack<>();
         Cell startCell = getStartCell(start, cells);
         Cell endCell = getEndCell(end, cells, startCell, width, height);
-
-        System.out.println("START: " + startCell.getCellIndex());
-        System.out.println("END: " + endCell.getCellIndex());
 
         HashMap<Integer, Integer> distanceBetweenCells = initDistanceBetweenCells(cells);
         HashMap<Integer, Double> cellsScore = initCellsScore(cells, endCell);
@@ -84,7 +77,6 @@ public class SolveHelper {
 
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
-        printAlgorithmStepsCells(algorithmSteps);
 
         resetCellStatus(cells);
         return algorithmSteps;
@@ -95,9 +87,6 @@ public class SolveHelper {
         LinkedList<Cell> linkedList = new LinkedList<>();
         Cell startCell = getStartCell(start, cells);
         Cell endCell = getEndCell(end, cells, startCell, width, height);
-
-        System.out.println("START: " + startCell.getCellIndex());
-        System.out.println("END: " + endCell.getCellIndex());
 
         linkedList.add(startCell);
         addUniqueCells(linkedList, getConnectedUnvisitedNeighbourCells(linkedList.getFirst()));
@@ -114,7 +103,6 @@ public class SolveHelper {
 
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
-        printAlgorithmStepsCells(algorithmSteps);
 
         resetCellStatus(cells);
         return algorithmSteps;
@@ -125,9 +113,6 @@ public class SolveHelper {
         Stack<Cell> stack = new Stack<>();
         Cell startCell = getStartCell(start, cells);
         Cell endCell = getEndCell(end, cells, startCell, width, height);
-
-        System.out.println("START: " + startCell.getCellIndex());
-        System.out.println("END: " + endCell.getCellIndex());
 
         stack.push(startCell);
         algorithmSteps.push(startCell);
@@ -148,7 +133,6 @@ public class SolveHelper {
 
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
-        printAlgorithmStepsCells(algorithmSteps);
 
         resetCellStatus(cells);
         return algorithmSteps;
@@ -282,15 +266,6 @@ public class SolveHelper {
             }
         }
         return cellsScore;
-    }
-
-    //Print algorithm steps
-    private static void printAlgorithmStepsCells(List<Cell> algorithmSteps) {
-        System.out.println("\nAlgorithm Steps (Cell indexes): ");
-        for (Cell cell : algorithmSteps) {
-            System.out.print(cell.getCellIndex() + " -> ");
-        }
-        System.out.println();
     }
 
     public static void resetCellStatus(List<Cell> cells) {

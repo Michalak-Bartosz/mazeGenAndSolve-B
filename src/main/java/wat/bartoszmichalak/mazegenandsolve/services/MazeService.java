@@ -114,7 +114,6 @@ public class MazeService {
 
         double solveTime = Double.parseDouble(String.valueOf(solveTimeFactor));
 
-        System.out.println("SOLVE TIME: " + solveTime);
         SolvedMaze solvedMaze = new SolvedMaze(maze.getMazeId(),
                 solveAlgorithmType,
                 algorithmSteps,
