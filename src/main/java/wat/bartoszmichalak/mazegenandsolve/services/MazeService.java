@@ -10,6 +10,9 @@ import wat.bartoszmichalak.mazegenandsolve.dto.*;
 import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
 import wat.bartoszmichalak.mazegenandsolve.entities.Maze;
 import wat.bartoszmichalak.mazegenandsolve.entities.SolvedMaze;
+import wat.bartoszmichalak.mazegenandsolve.exceptions.MazeCellNotFoundException;
+import wat.bartoszmichalak.mazegenandsolve.exceptions.MazeNotFoundException;
+import wat.bartoszmichalak.mazegenandsolve.exceptions.SolveNotFoundException;
 import wat.bartoszmichalak.mazegenandsolve.repositories.CellRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.MazeRepository;
 import wat.bartoszmichalak.mazegenandsolve.repositories.SolvedMazeRepository;
@@ -42,7 +45,7 @@ public class MazeService {
     }
 
     @Transactional
-    public MazeDto generateMaze(GenerateMazeDto generateMazeDto) {
+    public MazeDto generateMaze(GenerateMazeDto generateMazeDto) throws MazeCellNotFoundException {
 
         int width = generateMazeDto.getWidth();
         int height = generateMazeDto.getHeight();
@@ -78,12 +81,13 @@ public class MazeService {
         return new MazeDto(maze);
     }
 
-    //TODO add exception
-    public SolvedMazeDto solveMaze(SolveParamsDto solveParamsDto) {
+    @Transactional
+    public SolvedMazeDto solveMaze(SolveParamsDto solveParamsDto) throws MazeNotFoundException, MazeCellNotFoundException {
         Long mazeId = solveParamsDto.getMazeId();
         SolveAlgorithmType solveAlgorithmType = solveParamsDto.getSolveAlgorithmType();
 
-        Maze maze = mazeRepository.findById(mazeId).orElseThrow();
+        Maze maze = mazeRepository.findById(mazeId)
+                .orElseThrow(() -> new MazeNotFoundException(mazeId));
         List<Cell> cells = maze.getCells();
         List<Cell> algorithmSteps = new Stack<>();
 
@@ -123,8 +127,9 @@ public class MazeService {
         return new SolvedMazeDto(solvedMaze);
     }
 
-    private Cell extractCell(Long cellId) {
-        return ObjectUtils.isEmpty(cellId) ? null : cellRepository.findById(cellId).orElse(null);
+    private Cell extractCell(Long cellId) throws MazeCellNotFoundException {
+        return ObjectUtils.isEmpty(cellId) ? null : cellRepository.findById(cellId)
+                .orElseThrow(() -> new MazeCellNotFoundException(cellId));
     }
 
     public List<MazeDto> getAllMazes() {
@@ -132,45 +137,53 @@ public class MazeService {
                 .collect(Collectors.toList());
     }
 
-    public MazeDto getMaze(Long mazeId) {
-        Maze maze = mazeRepository.findById(mazeId).orElseThrow();
+    public MazeDto getMaze(Long mazeId) throws MazeNotFoundException {
+        Maze maze = mazeRepository.findById(mazeId)
+                .orElseThrow(() -> new MazeNotFoundException(mazeId));
         return new MazeDto(maze);
     }
 
-    public void deleteMaze(Long mazeId) {
+    public void deleteMaze(Long mazeId) throws MazeNotFoundException {
+        mazeRepository.findById(mazeId)
+                .orElseThrow(() -> new MazeNotFoundException(mazeId));
         mazeRepository.deleteById(mazeId);
     }
 
-    public List<CellDto> getMazeCells(Long mazeId) {
-        Maze maze = mazeRepository.findById(mazeId).orElseThrow();
+    public List<CellDto> getMazeCells(Long mazeId) throws MazeNotFoundException {
+        Maze maze = mazeRepository.findById(mazeId)
+                .orElseThrow(() -> new MazeNotFoundException(mazeId));
         return maze.getCells().stream().map(CellDto::new).collect(Collectors.toList());
     }
 
-    public List<CellDto> getSolveMazeCells(Long mazeId, Long solveId) {
-        Maze maze = mazeRepository.findById(mazeId).orElseThrow();
+    public List<CellDto> getSolveMazeCells(Long mazeId, Long solveId) throws MazeNotFoundException, SolveNotFoundException {
+        Maze maze = mazeRepository.findById(mazeId)
+                .orElseThrow(() -> new MazeNotFoundException(mazeId));
         SolvedMaze solvedMaze = maze.getSolvedMazes().stream()
                 .filter(sMaze -> sMaze.getSolveId().equals(solveId))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new SolveNotFoundException(solveId));
         return solvedMaze.getAlgorithmSteps().stream()
                 .map(CellDto::new)
                 .collect(Collectors.toList());
     }
 
-    public SolvedMazeDto getSolveMaze(Long solveId) {
+    public SolvedMazeDto getSolveMaze(Long solveId) throws SolveNotFoundException {
         return solvedMazeRepository.findById(solveId)
                 .map(SolvedMazeDto::new)
-                .orElseThrow();
+                .orElseThrow(() -> new SolveNotFoundException(solveId));
     }
 
-    public List<SolvedMazeDto> getAllSolveMazes(Long mazeId) {
-        Maze maze = mazeRepository.findById(mazeId).orElseThrow();
+    public List<SolvedMazeDto> getAllSolveMazes(Long mazeId) throws MazeNotFoundException {
+        Maze maze = mazeRepository.findById(mazeId)
+                .orElseThrow(() -> new MazeNotFoundException(mazeId));
         return maze.getSolvedMazes().stream()
                 .map(SolvedMazeDto::new)
                 .collect(Collectors.toList());
     }
 
-    public void deleteSolve(Long solveId) {
+    public void deleteSolve(Long solveId) throws SolveNotFoundException {
+        solvedMazeRepository.findById(solveId)
+                        .orElseThrow(() -> new SolveNotFoundException(solveId));
         solvedMazeRepository.deleteById(solveId);
     }
 }

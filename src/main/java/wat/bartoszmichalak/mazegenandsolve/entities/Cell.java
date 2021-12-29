@@ -66,12 +66,16 @@ public class Cell {
         return this.cellState.equals(CellState.VISITED);
     }
     public List<Cell> getUnvisitedNeighbourCells() {
-        return this.neighbourCells.stream().filter(c -> c.getCellState() == CellState.UNVISITED).collect(Collectors.toList());
+        return this.neighbourCells.stream()
+                .filter(c -> c.getCellState() == CellState.UNVISITED)
+                .collect(Collectors.toList());
     }
 
-    //TODO throw exception
     public Wall getSeparatingWall(Cell cell) {
-        return this.walls.values().stream().filter(w -> w.hasCellAsNeighbour(cell)).findFirst().orElse(null);
+        return this.walls.values().stream()
+                .filter(w -> w.hasCellAsNeighbour(cell))
+                .findFirst()
+                .orElse(null);
     }
 
     public void addNeighbourCells(List<Cell> neighbourCells) {

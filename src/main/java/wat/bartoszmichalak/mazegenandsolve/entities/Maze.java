@@ -7,6 +7,7 @@ import lombok.Setter;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.Direction;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.GenerateAlgorithmType;
+import wat.bartoszmichalak.mazegenandsolve.exceptions.MazeCellNotFoundException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class Maze {
     @JsonManagedReference
     private List<SolvedMaze> solvedMazes = new ArrayList<>();
 
-    public Maze(int height, int width, GenerateAlgorithmType algorithmType) {
+    public Maze(int height, int width, GenerateAlgorithmType algorithmType) throws MazeCellNotFoundException {
         this.height = height;
         this.width = width;
         this.algorithmType = algorithmType;
@@ -66,7 +67,7 @@ public class Maze {
         }
     }
 
-    private void initMazeCellsList() {
+    private void initMazeCellsList() throws MazeCellNotFoundException {
         HashMap<Direction, Wall> setOfWalls;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -105,14 +106,14 @@ public class Maze {
         return wallList;
     }
 
-    private void setNeighboursCells() {
+    private void setNeighboursCells() throws MazeCellNotFoundException {
         for (Cell cell : cells) {
             List<Cell> neighbourCells = getNeighboursCell(cell.getPositionX(), cell.getPositionY());
             cell.addNeighbourCells(neighbourCells);
         }
     }
 
-    private List<Cell> getNeighboursCell(int x, int y) {
+    private List<Cell> getNeighboursCell(int x, int y) throws MazeCellNotFoundException {
         List<Cell> neighbourCells = new ArrayList<>();
 
         List<Cell> xList = cells.stream().filter(c -> c.getPositionX() == x).collect(Collectors.toList());
@@ -124,28 +125,49 @@ public class Maze {
         return neighbourCells;
     }
 
-    private List<Cell> getNeighbourCellByTheRow(int x, List<Cell> yList) {
+    private List<Cell> getNeighbourCellByTheRow(int x, List<Cell> yList) throws MazeCellNotFoundException {
         List<Cell> neighbourCells = new ArrayList<>();
         if (x == 0) {
-            neighbourCells.add(yList.stream().filter(c -> c.getPositionX() == (x + 1)).findFirst().orElseThrow());
+            neighbourCells.add(yList.stream()
+                    .filter(c -> c.getPositionX() == (x + 1))
+                    .findFirst()
+                    .orElseThrow(() -> new MazeCellNotFoundException((long) (x + 1))));
         } else if (x == width - 1) {
-            neighbourCells.add(yList.stream().filter(c -> c.getPositionX() == (x - 1)).findFirst().orElseThrow());
+            neighbourCells.add(yList.stream()
+                    .filter(c -> c.getPositionX() == (x - 1))
+                    .findFirst()
+                    .orElseThrow(() -> new MazeCellNotFoundException((long) (x - 1))));
         } else {
-            neighbourCells.add(yList.stream().filter(c -> c.getPositionX() == (x + 1)).findFirst().orElseThrow());
-            neighbourCells.add(yList.stream().filter(c -> c.getPositionX() == (x - 1)).findFirst().orElseThrow());
+            neighbourCells.add(yList.stream()
+                    .filter(c -> c.getPositionX() == (x + 1))
+                    .findFirst()
+                    .orElseThrow(() -> new MazeCellNotFoundException((long) (x + 1))));
+            neighbourCells.add(yList.stream()
+                    .filter(c -> c.getPositionX() == (x - 1))
+                    .findFirst()
+                    .orElseThrow(() -> new MazeCellNotFoundException((long) (x - 1))));
         }
         return neighbourCells;
     }
 
-    private List<Cell> getNeighbourCellByTheColumn(int y, List<Cell> xList) {
+    private List<Cell> getNeighbourCellByTheColumn(int y, List<Cell> xList) throws MazeCellNotFoundException {
         List<Cell> neighbourCells = new ArrayList<>();
         if (y == 0) {
-            neighbourCells.add(xList.stream().filter(c -> c.getPositionY() == (y + 1)).findFirst().orElseThrow());
+            neighbourCells.add(xList.stream()
+                    .filter(c -> c.getPositionY() == (y + 1)).findFirst()
+                    .orElseThrow(() -> new MazeCellNotFoundException((long) (y + 1))));
         } else if (y == height - 1) {
-            neighbourCells.add(xList.stream().filter(c -> c.getPositionY() == (y - 1)).findFirst().orElseThrow());
+            neighbourCells.add(xList.stream()
+                    .filter(c -> c.getPositionY() == (y - 1)).findFirst()
+                    .orElseThrow(() -> new MazeCellNotFoundException((long) (y - 1))));
         } else {
-            neighbourCells.add(xList.stream().filter(c -> c.getPositionY() == (y - 1)).findFirst().orElseThrow());
-            neighbourCells.add(xList.stream().filter(c -> c.getPositionY() == (y + 1)).findFirst().orElseThrow());
+            neighbourCells.add(xList.stream()
+                    .filter(c -> c.getPositionY() == (y - 1)).findFirst()
+                    .orElseThrow(() -> new MazeCellNotFoundException((long) (y - 1))));
+            neighbourCells.add(xList.stream()
+                    .filter(c -> c.getPositionY() == (y + 1))
+                    .findFirst()
+                    .orElseThrow(() -> new MazeCellNotFoundException((long) (y + 1))));
         }
         return neighbourCells;
     }

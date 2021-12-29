@@ -1,6 +1,7 @@
 package wat.bartoszmichalak.mazegenandsolve.services.util;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StopWatch;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
@@ -14,16 +15,17 @@ import java.util.stream.Collectors;
 public class SolveHelper {
 
     private static final Random rand = new Random();
+    Stack<Cell> algorithmSteps = new Stack<>();
 
-    public static List<Cell> solveByDijkstra(List<Cell> cells, int width, int height, Cell start, Cell end, StopWatch stopWatch) {
-        List<Cell> algorithmSteps = new Stack<>();
+    public static Stack<Cell> solveByDijkstra(List<Cell> cells, int width, int height, Cell start, Cell end, StopWatch stopWatch) {
+        algorithmSteps = new Stack<>();
         Cell startCell = getStartCell(start, cells);
         Cell endCell = getEndCell(end, cells, startCell, width, height);
         Cell currentCell;
 
         HashMap<Integer, Integer> distanceFromStartCell = initDistanceFromStartCell(startCell, cells);
         HashMap<Integer, Integer> orderedDistanceFromStartCell = sortByDistance(distanceFromStartCell);
-        HashMap<Integer, Integer> cellsValue = initCellsValue(cells, startCell);
+        HashMap<Integer, Integer> cellsValue = initCellsValue(startCell, cells);
         HashMap<Integer, LinkedList<Cell>> pathToCell = initPathToCell(cells);
 
         stopWatch.start();
@@ -42,10 +44,10 @@ public class SolveHelper {
         stopWatch.stop();
 
         for (Cell cell : pathToCell.get(endCell.getCellIndex())) {
-            algorithmSteps.add(cell);
+            algorithmSteps.push(cell);
             cell.setCellState(CellState.VISITED);
         }
-        algorithmSteps.add(endCell);
+        algorithmSteps.push(endCell);
         startCell.setCellState(CellState.START);
         endCell.setCellState(CellState.END);
 
@@ -54,7 +56,7 @@ public class SolveHelper {
     }
 
     public static Stack<Cell> solveByAstar(List<Cell> cells, int width, int height, Cell start, Cell end, StopWatch stopWatch) {
-        Stack<Cell> algorithmSteps = new Stack<>();
+        algorithmSteps = new Stack<>();
         Cell startCell = getStartCell(start, cells);
         Cell endCell = getEndCell(end, cells, startCell, width, height);
 
@@ -83,21 +85,21 @@ public class SolveHelper {
     }
 
     public static List<Cell> solveByBFS(List<Cell> cells, int width, int height, Cell start, Cell end, StopWatch stopWatch) {
-        List<Cell> algorithmSteps = new Stack<>();
+        algorithmSteps = new Stack<>();
         LinkedList<Cell> linkedList = new LinkedList<>();
         Cell startCell = getStartCell(start, cells);
         Cell endCell = getEndCell(end, cells, startCell, width, height);
 
         linkedList.add(startCell);
         addUniqueCells(linkedList, getConnectedUnvisitedNeighbourCells(linkedList.getFirst()));
-        algorithmSteps.add(linkedList.getFirst());
+        algorithmSteps.push(linkedList.getFirst());
 
         stopWatch.start();
         while (!linkedList.getFirst().equals(endCell)) {
             linkedList.getFirst().setCellState(CellState.VISITED);
             linkedList.removeFirst();
             addUniqueCells(linkedList, getConnectedUnvisitedNeighbourCells(linkedList.getFirst()));
-            algorithmSteps.add(linkedList.getFirst());
+            algorithmSteps.push(linkedList.getFirst());
         }
         stopWatch.stop();
 
@@ -109,7 +111,7 @@ public class SolveHelper {
     }
 
     public static Stack<Cell> solveByDFS(List<Cell> cells, int width, int height, Cell start, Cell end, StopWatch stopWatch) {
-        Stack<Cell> algorithmSteps = new Stack<>();
+        algorithmSteps = new Stack<>();
         Stack<Cell> stack = new Stack<>();
         Cell startCell = getStartCell(start, cells);
         Cell endCell = getEndCell(end, cells, startCell, width, height);
@@ -122,10 +124,11 @@ public class SolveHelper {
             Cell currentCell = stack.peek();
             currentCell.setCellState(CellState.VISITED);
             List<Cell> connectedUnvisitedNeighbourCells = getConnectedUnvisitedNeighbourCells(currentCell);
-            if (!connectedUnvisitedNeighbourCells.isEmpty()) {
+            if (!CollectionUtils.isEmpty(connectedUnvisitedNeighbourCells)) {
                 stack.push(connectedUnvisitedNeighbourCells.get(0));
                 algorithmSteps.push(connectedUnvisitedNeighbourCells.get(0));
             } else {
+                algorithmSteps.remove(stack.peek());
                 stack.pop();
             }
         }
@@ -137,8 +140,7 @@ public class SolveHelper {
         resetCellStatus(cells);
         return algorithmSteps;
     }
-
-    //TODO add throw exception
+    
     private static Cell getStartCell(Cell start, List<Cell> cellList) {
         List<Cell> cells = cellList.stream().filter(c -> c.getPositionX() == 0 || c.getPositionY() == 0).collect(Collectors.toList());
         return ObjectUtils.isEmpty(start) ? cells.get(rand.nextInt(cells.size())) : start;
@@ -182,7 +184,7 @@ public class SolveHelper {
         return pathToCell;
     }
 
-    private static HashMap<Integer, Integer> initCellsValue(List<Cell> cellList, Cell startCell) {
+    private static HashMap<Integer, Integer> initCellsValue(Cell startCell, List<Cell> cellList) {
         HashMap<Integer, Integer> cellsValue = new HashMap<>();
         cellsValue.put(startCell.getCellIndex(), 0);
         for (Cell cell : cellList) {
@@ -213,7 +215,7 @@ public class SolveHelper {
         startCell.setCellState(CellState.VISITED);
         List<Cell> cellsToSetDistance = getConnectedUnvisitedNeighbourCells(startCell);
         int actualDistance = 1;
-        while (!cellsToSetDistance.isEmpty()) {
+        while (!CollectionUtils.isEmpty(cellsToSetDistance)) {
             List<Cell> neighbourCells = new ArrayList<>();
             for (Cell cell : cellsToSetDistance) {
                 distanceFromStartCell.put(cell.getCellIndex(), actualDistance);

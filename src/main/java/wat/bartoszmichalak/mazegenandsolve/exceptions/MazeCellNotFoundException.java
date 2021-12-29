@@ -1,16 +1,16 @@
 package wat.bartoszmichalak.mazegenandsolve.exceptions;
 
-public class MazeNotFoundException extends Exception {
+public class MazeCellNotFoundException extends Exception {
     private String message = "";
 
-    public MazeNotFoundException(Long mazeId) {
-        this.message = "Maze: " + mazeId + " doesn't exist.";
+    public MazeCellNotFoundException(Long cellId) {
+        this.message = "Cell: " + cellId + " doesn't exist.";
     }
 
     @Override
     public String getMessage() {
         if (message.trim().isEmpty()) {
-            this.message = "Maze doesn't exist.";
+            this.message = "Cell doesn't exist.";
         }
         return message;
     }

@@ -17,7 +17,7 @@ public class WallDto {
     private final List<Long> neighbourCellsId;
 
     public WallDto(Wall wall) {
-        this.id = wall.getId();
+        this.id = wall.getWallId();
         this.wallIndex = wall.getWallIndex();
         this.mazeId = wall.getMaze().getMazeId();
         this.isVisible = wall.getIsVisible();

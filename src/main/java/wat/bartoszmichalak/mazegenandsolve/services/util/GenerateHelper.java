@@ -1,6 +1,7 @@
 package wat.bartoszmichalak.mazegenandsolve.services.util;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
@@ -16,28 +17,26 @@ public class GenerateHelper {
 
     private static final Random rand = new Random();
     Stack<Cell> algorithmCellSteps;
-    Stack<Wall> algorithmWallSteps;
 
     public static void generateByRandomDFS(Maze maze, StopWatch stopWatch) {
         Stack<Cell> stack = new Stack<>();
         algorithmCellSteps = new Stack<>();
 
+        stopWatch.start();
         Cell currentCell = getRandomCell(maze.getCells());
-        currentCell.setCellState(CellState.VISITED);
 
         stack.push(currentCell);
         algorithmCellSteps.push(currentCell);
 
-        stopWatch.start();
         while (!stack.isEmpty()) {
             currentCell = stack.pop();
+            currentCell.setCellState(CellState.VISITED);
             List<Cell> neighbourCells = currentCell.getUnvisitedNeighbourCells();
-            if (!neighbourCells.isEmpty()) {
+            if (!CollectionUtils.isEmpty(neighbourCells)) {
                 stack.push(currentCell);
                 Cell chosenNeighbourCell = getRandomCell(neighbourCells);
                 Wall separatingWall = currentCell.getSeparatingWall(chosenNeighbourCell);
                 separatingWall.setIsVisible(false);
-                chosenNeighbourCell.setCellState(CellState.VISITED);
                 stack.push(chosenNeighbourCell);
                 algorithmCellSteps.push(chosenNeighbourCell);
             }
@@ -48,10 +47,11 @@ public class GenerateHelper {
     }
 
     public static void generateByRandomKruskal(Maze maze, StopWatch stopWatch) {
-        algorithmWallSteps = new Stack<>();
+        algorithmCellSteps = new Stack<>();
         int startInsideWallIndex = 2 * (maze.getWidth() + maze.getHeight());
         int endInsideWallIndex = maze.getWalls().size() - 1;
-        List<Wall> wallList = maze.getWalls().subList(startInsideWallIndex, endInsideWallIndex);
+        List<Wall> wallList = maze.getWalls()
+                .subList(startInsideWallIndex, endInsideWallIndex);
 
         Set<Set<Integer>> mergedCellSet = new HashSet<>();
         for (Cell cell : maze.getCells()) {
@@ -61,14 +61,15 @@ public class GenerateHelper {
 
         stopWatch.start();
         while (!isAllCellsMerged(mergedCellSet)) {
-
             Wall chosenWall = getRandomWall(wallList);
-            List<Cell> cellList = chosenWall.getNeighbourCells();
-            List<Integer> neighbourCellIndexes = cellList.stream().map(Cell::getCellIndex).collect(Collectors.toList());
+            List<Integer> neighbourCellIndexes = chosenWall.getNeighbourCells().stream()
+                    .map(Cell::getCellIndex)
+                    .collect(Collectors.toList());
             if (!isCellsAreInSameSet(mergedCellSet, neighbourCellIndexes)) {
                 chosenWall.setIsVisible(false);
                 mergeTwoCellIndexSets(mergedCellSet, neighbourCellIndexes);
-                algorithmWallSteps.push(chosenWall);
+                chosenWall.getNeighbourCells()
+                        .forEach(cell -> algorithmCellSteps.push(cell));
                 wallList.remove(chosenWall);
             }
         }
@@ -78,9 +79,10 @@ public class GenerateHelper {
     }
 
     public static void generateByRandomPrim(Maze maze, StopWatch stopWatch) {
-        algorithmWallSteps = new Stack<>();
+        algorithmCellSteps = new Stack<>();
 
         Cell currentCell = getRandomCell(maze.getCells());
+        algorithmCellSteps.push(currentCell);
         currentCell.setCellState(CellState.VISITED);
 
         List<Wall> wallList = new ArrayList<>(currentCell.getWalls().values());
@@ -88,12 +90,14 @@ public class GenerateHelper {
         stopWatch.start();
         while (maze.hasUnvisitedCells()) {
             Wall chosenWall = getRandomWall(wallList);
-            if (chosenWall.hasUnvisitedNeighbourCell()) {
-                Cell neighbourCell = chosenWall.getUnvisitedNeighbourCell();
-                neighbourCell.setCellState(CellState.VISITED);
-                wallList.addAll(neighbourCell.getWalls().values());
+            if (!CollectionUtils.isEmpty(chosenWall.getUnvisitedNeighbourCells())) {
+                List<Cell> unvisitedNeighbourCells = chosenWall.getUnvisitedNeighbourCells();
+                unvisitedNeighbourCells.forEach(cell -> {
+                    cell.setCellState(CellState.VISITED);
+                    wallList.addAll(cell.getWalls().values());
+                    algorithmCellSteps.push(cell);
+                });
                 chosenWall.setIsVisible(false);
-                algorithmWallSteps.push(chosenWall);
             }
             wallList.remove(chosenWall);
         }
@@ -124,14 +128,14 @@ public class GenerateHelper {
         resetCellStatus(maze.getCells());
     }
 
-    //TODO throw exception
+    //Help method
 
     private static Cell getRandomCell(List<Cell> cellList) {
-        return cellList.get(rand.nextInt(cellList.size()));
+        return CollectionUtils.isEmpty(cellList) ? null : cellList.get(rand.nextInt(cellList.size()));
     }
 
     private static Wall getRandomWall(List<Wall> wallList) {
-        return wallList.get(rand.nextInt(wallList.size()));
+        return CollectionUtils.isEmpty(wallList) ? null : wallList.get(rand.nextInt(wallList.size()));
     }
 
     //Kruskal

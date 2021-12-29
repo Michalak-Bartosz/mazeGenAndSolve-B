@@ -8,6 +8,7 @@ import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -16,7 +17,7 @@ public class Wall {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long wallId;
 
     @NotNull
     private int wallIndex;
@@ -41,7 +42,6 @@ public class Wall {
     }
 
     public Wall() {
-
     }
 
     public void addNeighbourMazeCell(Cell cell) {
@@ -52,12 +52,7 @@ public class Wall {
         return neighbourCells.contains(cell);
     }
 
-    public boolean hasUnvisitedNeighbourCell() {
-        return neighbourCells.stream().anyMatch(c -> c.getCellState().equals(CellState.UNVISITED));
-    }
-
-    //TODO Add exception throw
-    public Cell getUnvisitedNeighbourCell() {
-        return neighbourCells.stream().filter(c -> c.getCellState().equals(CellState.UNVISITED)).findFirst().orElseThrow();
+    public List<Cell> getUnvisitedNeighbourCells() {
+        return neighbourCells.stream().filter(c -> c.getCellState().equals(CellState.UNVISITED)).collect(Collectors.toList());
     }
 }
