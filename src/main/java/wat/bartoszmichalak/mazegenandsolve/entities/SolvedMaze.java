@@ -2,13 +2,15 @@ package wat.bartoszmichalak.mazegenandsolve.entities;
 
 import com.sun.istack.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Getter
 @Entity(name = "solveMaze")
+@NoArgsConstructor
+@Getter
 public class SolvedMaze {
 
     @Id
@@ -33,8 +35,5 @@ public class SolvedMaze {
         this.solveAlgorithmType = solveAlgorithmType;
         this.algorithmSteps = algorithmSteps;
         this.solveTime = solveTime;
-    }
-
-    public SolvedMaze() {
     }
 }

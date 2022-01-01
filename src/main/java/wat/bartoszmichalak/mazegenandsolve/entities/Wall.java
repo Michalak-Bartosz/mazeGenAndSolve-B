@@ -2,6 +2,7 @@ package wat.bartoszmichalak.mazegenandsolve.entities;
 
 import com.sun.istack.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 
@@ -10,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Entity(name = "wall")
+@NoArgsConstructor
 @Getter
 @Setter
-@Entity(name = "wall")
 public class Wall {
 
     @Id
@@ -39,9 +41,6 @@ public class Wall {
         this.wallIndex = wallIndex;
         this.isVisible = true;
         neighbourCells = new ArrayList<>();
-    }
-
-    public Wall() {
     }
 
     public void addNeighbourMazeCell(Cell cell) {

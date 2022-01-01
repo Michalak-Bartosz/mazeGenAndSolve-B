@@ -1,6 +1,8 @@
 package wat.bartoszmichalak.mazegenandsolve.entities;
 
 import com.sun.istack.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.Direction;
 
@@ -9,6 +11,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity(name = "cell")
+@NoArgsConstructor
+@Getter
 public class Cell {
 
     @Id
@@ -49,9 +53,6 @@ public class Cell {
         this.neighbourCells = new ArrayList<>();
     }
 
-    public Cell() {
-    }
-
     private void setCellAsNeighbourWalls() {
         for (Direction direction : Direction.values()) {
             walls.get(direction).addNeighbourMazeCell(this);
@@ -65,6 +66,7 @@ public class Cell {
     public boolean isVisited() {
         return this.cellState.equals(CellState.VISITED);
     }
+
     public List<Cell> getUnvisitedNeighbourCells() {
         return this.neighbourCells.stream()
                 .filter(c -> c.getCellState() == CellState.UNVISITED)
@@ -80,37 +82,5 @@ public class Cell {
 
     public void addNeighbourCells(List<Cell> neighbourCells) {
         this.neighbourCells = neighbourCells;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Maze getMaze() {
-        return this.maze;
-    }
-
-    public int getCellIndex() {
-        return this.cellIndex;
-    }
-
-    public int getPositionX() {
-        return this.positionX;
-    }
-
-    public int getPositionY() {
-        return this.positionY;
-    }
-
-    public CellState getCellState() {
-        return this.cellState;
-    }
-
-    public Map<Direction, Wall> getWalls() {
-        return walls;
-    }
-
-    public List<Cell> getNeighbourCells() {
-        return this.neighbourCells;
     }
 }

@@ -3,6 +3,7 @@ package wat.bartoszmichalak.mazegenandsolve.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.Direction;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Entity(name = "maze")
+@NoArgsConstructor
 public class Maze {
 
     @Id
@@ -56,9 +58,6 @@ public class Maze {
         this.algorithmType = algorithmType;
         initMazeWallsList();
         initMazeCellsList();
-    }
-
-    public Maze() {
     }
 
     private void initMazeWallsList() {
