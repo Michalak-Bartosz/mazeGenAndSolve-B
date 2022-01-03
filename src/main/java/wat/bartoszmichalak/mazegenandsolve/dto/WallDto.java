@@ -23,7 +23,7 @@ public class WallDto {
         this.isVisible = wall.getIsVisible();
         this.neighbourCellsId = wall.getNeighbourCells()
                 .stream()
-                .map(Cell::getId)
+                .map(Cell::getCellId)
                 .collect(Collectors.toList());
     }
 }

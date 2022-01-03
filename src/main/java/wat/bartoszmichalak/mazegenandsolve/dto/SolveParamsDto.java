@@ -1,6 +1,7 @@
 package wat.bartoszmichalak.mazegenandsolve.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.SolveAlgorithmType;
 import wat.bartoszmichalak.mazegenandsolve.entities.Cell;
@@ -9,14 +10,12 @@ import wat.bartoszmichalak.mazegenandsolve.entities.SolvedMaze;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class SolveParamsDto {
     private Long mazeId;
     private SolveAlgorithmType solveAlgorithmType;
     private Long startCellId;
     private Long endCellId;
-
-    public SolveParamsDto() {
-    }
 
     public SolveParamsDto(SolvedMaze solvedMaze) {
         this.mazeId = solvedMaze.getMazeId();
@@ -29,7 +28,7 @@ public class SolveParamsDto {
         return algorithmSteps.stream()
                 .filter(cell -> cell.getCellState().equals(CellState.START))
                 .findFirst()
-                .map(Cell::getId)
+                .map(Cell::getCellId)
                 .orElse(null);
     }
 
@@ -37,7 +36,7 @@ public class SolveParamsDto {
         return algorithmSteps.stream()
                 .filter(cell -> cell.getCellState().equals(CellState.END))
                 .findFirst()
-                .map(Cell::getId)
+                .map(Cell::getCellId)
                 .orElse(null);
     }
 }

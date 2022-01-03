@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Getter
 public class CellDto {
 
-    private final Long id;
+    private final Long cellId;
     private final Long mazeId;
     private final int cellIndex;
     private final int positionX;
@@ -24,7 +24,7 @@ public class CellDto {
     private final List<Long> neighbourCellsId;
 
     public CellDto(Cell cell) {
-        this.id = cell.getId();
+        this.cellId = cell.getCellId();
         this.mazeId = cell.getMaze().getMazeId();
         this.cellIndex = cell.getCellIndex();
         this.positionX = cell.getPositionX();
@@ -33,7 +33,7 @@ public class CellDto {
         this.walls = mapWalls(cell.getWalls());
         this.neighbourCellsId = cell.getNeighbourCells()
                 .stream()
-                .map(Cell::getId)
+                .map(Cell::getCellId)
                 .collect(Collectors.toList());
     }
 

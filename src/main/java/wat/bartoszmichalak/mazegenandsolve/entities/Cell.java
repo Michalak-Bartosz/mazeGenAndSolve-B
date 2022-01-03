@@ -17,7 +17,7 @@ public class Cell {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long cellId;
 
     @NotNull
     @ManyToOne
