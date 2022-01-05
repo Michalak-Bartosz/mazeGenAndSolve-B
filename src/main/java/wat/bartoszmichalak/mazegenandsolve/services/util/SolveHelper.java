@@ -270,7 +270,7 @@ public class SolveHelper {
         return cellsScore;
     }
 
-    public static void resetCellStatus(List<Cell> cells) {
+    private static void resetCellStatus(List<Cell> cells) {
         for (Cell cell : cells) {
             cell.setCellState(CellState.UNVISITED);
         }

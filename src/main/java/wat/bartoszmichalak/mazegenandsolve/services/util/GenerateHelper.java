@@ -167,7 +167,7 @@ public class GenerateHelper {
         return mergedCellSet.size() == 1;
     }
 
-    public static void resetCellStatus(List<Cell> cells) {
+    private static void resetCellStatus(List<Cell> cells) {
         for (Cell cell : cells) {
             cell.setCellState(CellState.UNVISITED);
         }
