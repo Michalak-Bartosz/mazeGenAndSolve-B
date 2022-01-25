@@ -1,5 +1,6 @@
 package wat.bartoszmichalak.mazegenandsolve.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wat.bartoszmichalak.mazegenandsolve.algorithmHelper.CellState;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class SolveParamsDto {
     private Long mazeId;
     private SolveAlgorithmType solveAlgorithmType;
