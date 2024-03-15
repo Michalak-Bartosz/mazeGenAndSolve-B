@@ -12,7 +12,7 @@ public class SecurityConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://maze-gen-and-solve.herokuapp.com/")
+                .allowedOrigins("http://89.168.82.33:3000/")
                 .allowedMethods("DELETE", "POST", "GET");
     }
 }
